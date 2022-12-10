@@ -1,0 +1,12 @@
+{
+  "files.exclude": {
+    "**/node_modules": true,
+    "migrations_lib": true,
+    "tmp": true,
+    "dist": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "js/ts.implicitProjectConfig.strictFunctionTypes": false
+}

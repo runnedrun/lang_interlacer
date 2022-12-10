@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "demo-xqchinese",
+    "staging": "xqchinese-325dd",
+    "demo": "demo-xqchinese"
+  }
+}

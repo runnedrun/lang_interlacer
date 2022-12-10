@@ -1,0 +1,61 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: "Build and deploy"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "checkout project"
+        uses: "actions/checkout@v2"
+      - name: "install node and set up cache (remote)"
+        uses: actions/setup-node@v2
+        if: ${{ !env.ACT }}
+        with:
+          node-version: "14"
+          cache: "yarn"
+      - name: "set up next js cache"
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ github.workspace }}/tmp/.next/cache
+            # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: "install yarn"
+        run: |
+          yarn install
+      - name: "install certs"
+        if: ${{ env.ACT }}
+        run: |
+          apt-get update
+          apt-get install apt-transport-https ca-certificates gnupg curl python -y
+          curl https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz > /tmp/google-cloud-sdk.tar.gz
+          /usr/local/gcloud/google-cloud-sdk/install.sh --help
+          mkdir -p /usr/local/gcloud \
+            && tar -C /usr/local/gcloud -xvf /tmp/google-cloud-sdk.tar.gz \
+            && /usr/local/gcloud/google-cloud-sdk/install.sh --path-update true --quiet
+      - name: "Create .env.local.test file"
+        run: |
+          node create_env_local_for_deploy.js
+        shell: bash
+        env:
+          PROD_ENV_FILE: ${{secrets.PROD_ENV_FILE}}
+          GCP_SA_KEY: ${{secrets.GCP_SA_KEY}}
+      - name: "Build"
+        run: |
+          yarn build
+        env:
+          NODE_ENV: "production"
+      - name: "deploy"
+        run: |
+          gcloud --quiet auth activate-service-account github-actions@hylite-prod.iam.gserviceaccount.com --key-file gcap_key.json
+          gcloud app deploy app.yaml --project hylite-prod --promote --quiet

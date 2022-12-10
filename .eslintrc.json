@@ -1,0 +1,16 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react-hooks/rules-of-hooks": "off",
+
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ]
+  }
+}
