@@ -35,9 +35,6 @@
     ]
   },
   "emulators": {
-    "hosting": {
-      "port": 5012
-    },
     "auth": {
       "port": 9089
     },

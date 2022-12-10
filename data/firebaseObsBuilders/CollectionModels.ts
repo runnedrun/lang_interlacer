@@ -9,6 +9,7 @@ import { EmailSendRecord } from "../types/EmailSendRecord"
 import { Document } from "../types/Document"
 import { DocumentEntry } from "../types/DocumentEntry"
 import { VocabEntry } from "../types/VocabEntry"
+import { RawParagraph } from "../types/RawParagraph"
 
 export const CollectionsWithConverters: {
   [key in keyof CollectionModels]: FirestoreDataConverter<CollectionModels[key]>
@@ -20,6 +21,7 @@ export const CollectionsWithConverters: {
   dev_SessionRecord: buildConverterForType<SessionRecord>(),
   documentEntry: buildConverterForType<DocumentEntry>(),
   vocabEntry: buildConverterForType<VocabEntry>(),
+  rawParagraph: buildConverterForType<RawParagraph>(),
 }
 
 export type AllModels = {
@@ -31,6 +33,7 @@ export type AllModels = {
   emailSendRecord: EmailSendRecord
   vocabEntry: VocabEntry
   documentEntry: DocumentEntry
+  rawParagraph: RawParagraph
 }
 
 export type CollectionModels = Omit<AllModels, "user">

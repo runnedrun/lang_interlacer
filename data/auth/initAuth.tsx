@@ -57,7 +57,7 @@ const initAuth = () => {
   } as InitConfig
 
   if (isDemoMode()) {
-    config.firebaseAuthEmulatorHost = "localhost:9099"
+    config.firebaseAuthEmulatorHost = process.env.FIREBASE_AUTH_EMULATOR_HOST
   }
 
   init(config)

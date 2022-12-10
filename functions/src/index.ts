@@ -1,5 +1,6 @@
-import { example } from "./example"
+import { prepEmbedding } from "./prepEmbedding"
 import * as firebase from "firebase-admin/app"
+import "./fixTsPaths"
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -11,4 +12,4 @@ import * as firebase from "firebase-admin/app"
 
 firebase.initializeApp()
 
-export { example }
+export { prepEmbedding }

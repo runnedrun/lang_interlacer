@@ -11,6 +11,17 @@ module.exports = {
         test: /\.(ts|tsx|js)?$/,
         exclude: /node_modules/,
         loader: "babel-loader",
+        options: {
+          presets: [
+            "@babel/preset-env",
+            "@babel/preset-react",
+            "@babel/preset-typescript",
+          ],
+          plugins: [
+            "@babel/plugin-proposal-class-properties",
+            "@babel/plugin-transform-runtime",
+          ],
+        },
       },
       {
         test: /\.css$/i,
