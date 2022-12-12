@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "14"
+    "node": "16"
   },
   "main": "dist/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "start": "next start -p 8080",
     "lint": "next lint",
     "build-functions": "webpack --watch ",
-    "emulate": "firebase emulators:start --project demo-xqchinese"
+    "emulate": "firebase emulators:start --project xqchinese-325dd"
   },
   "dependencies": {
     "@emotion/cache": "latest",
@@ -50,10 +50,12 @@
     "arg": "^5.0.1",
     "axios": "^0.24.0",
     "base64-inline-loader": "^2.0.1",
+    "beam-search": "^1.0.2",
     "classnames": "^2.3.1",
     "cors": "^2.8.5",
     "critters-webpack-plugin": "^3.0.2",
     "css-loader": "^6.7.2",
+    "debug": "^4.3.4",
     "deep-diff": "^1.0.2",
     "dotenv": "^16.0.0",
     "draft-js": "^0.11.7",
@@ -72,6 +74,7 @@
     "json-stable-stringify": "^1.0.1",
     "libphonenumber-js": "^1.9.35",
     "lodash": "^4.17.21",
+    "mathjs": "^11.5.0",
     "module-alias": "^2.2.2",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.34",
@@ -114,13 +117,16 @@
     "style-loader": "^3.3.1",
     "tailwind-override": "^0.6.1",
     "tailwindcss": "^3.2.3",
+    "tree-model": "^1.0.7",
     "ts-keycode-enum": "^1.0.6",
     "twilio": "^3.71.3",
     "url-loader": "^4.1.1",
     "use-deep-compare-effect": "^1.8.1",
     "utility-types": "^3.10.0",
     "uuid": "^8.3.2",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "wink-eng-lite-web-model": "^1.4.3",
+    "wink-nlp": "^1.13.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",

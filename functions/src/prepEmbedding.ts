@@ -1,117 +1,143 @@
 import { Language } from "@/data/types/RawParagraph"
-import { Paragraph } from "@/pages/doc/[docKey]"
-import { getFirestore } from "firebase-admin/firestore"
 import * as functions from "firebase-functions"
 import { testData } from "./helpers/testData"
+import { english, chinese } from "./helpers/hp"
 import { fbSet } from "./helpers/writer"
 import fetch from "node-fetch"
+import wink from "wink-nlp"
+import winkModel from "wink-eng-lite-web-model"
+import { chunk } from "lodash"
 
-// export const example = functions.firestore
-//   .document("themeGenImageJobs/{docId}")
-//   .onCreate((change) => {
-//     const firestore = getFirestore()
-//   })
+const nlp = wink(winkModel)
+
+// http://localhost:5011/xqchinese-325dd/us-central1/prepEmbedding
 
 const sentSplitUrl =
-  "https://runnedrun-didactic-eureka-xgr9w667rc6x96-5000.preview.app.github.dev/split-sentences"
+  "https://sent-similarity-server-wjr62wruta-lz.a.run.app/split-sentences"
 
 const embeddingsUrl =
-  "https://runnedrun-didactic-eureka-xgr9w667rc6x96-5000.preview.app.github.dev/encode-sentences"
+  "https://sent-similarity-server-wjr62wruta-lz.a.run.app/encode-sentences"
 
-const getSents = async () => {
-  const [enSentencesSplitResp, zhSentencesSplitResp] = await Promise.all([
-    fetch(sentSplitUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        texts: testData.englishParagraphs,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }),
-    fetch(sentSplitUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        texts: testData.chineseParagraphs,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }),
-  ])
-  return [await enSentencesSplitResp.json(), await zhSentencesSplitResp.json()]
+// const sentSplitUrl =
+//   "https://runnedrun-didactic-eureka-xgr9w667rc6x96-5000.preview.app.github.dev/split-sentences"
+
+// const embeddingsUrl =
+//   "https://runnedrun-didactic-eureka-xgr9w667rc6x96-5000.preview.app.github.dev/encode-sentences"
+
+type Paragraph = {
+  sentences: string[]
 }
 
-const getEmbeddings = async (
-  enParagraphs: string[][],
-  zhParagraphs: string[][]
-) => {
-  const [enSentencesSplitResp, zhSentencesSplitResp] = await Promise.all([
-    fetch(embeddingsUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        paragraphs: enParagraphs,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }),
-    fetch(embeddingsUrl, {
-      method: "POST",
-      body: JSON.stringify({
-        paragraphs: zhParagraphs,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }),
-  ])
-
-  return [await enSentencesSplitResp.json(), await zhSentencesSplitResp.json()]
+const isLatin = (text: string) => {
+  return /^[a-zA-Z0-9- ]*$/.test(text)
 }
 
-const docKey = "nyt-1"
+const getSentsFromServer = async (text: string) => {
+  return (
+    await (
+      await fetch(sentSplitUrl, {
+        method: "POST",
+        body: JSON.stringify({
+          texts: [text],
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+    ).json()
+  ).results
+}
+
+const getSents = async (text: string) => {
+  const clean = removeNewLines(text)
+
+  const textIsLatin = isLatin(clean.slice(0, 10))
+
+  const results = await (textIsLatin
+    ? Promise.resolve(nlp.readDoc(clean).sentences().out())
+    : getSentsFromServer(clean).then((_) => _[0].sentences))
+
+  const cleanResults = results.filter(Boolean)
+
+  return cleanResults as string[]
+}
+
+const getEmbeddings = async (sentences: string[]) => {
+  const embeddingResp = await fetch(embeddingsUrl, {
+    method: "POST",
+    body: JSON.stringify({
+      paragraphs: [sentences],
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  const json = await embeddingResp.json()
+  return json.results.embeddings[0] as number[][]
+}
+
+const docKey = "hp-2"
 
 const saveEmbeddingsAndParagraphs = async (
-  paragraphs: Paragraph[],
-  embeddings: number[][][],
-  language: Language
+  sentences: string[],
+  embeddings: number[][],
+  languageId: string
 ) => {
-  await Promise.all(
-    paragraphs.map((paragraph, i) => {
-      const sentences = paragraph.sentences
-      const sentencesWithEmebeddings = sentences.map((sentence, j) => {
+  const chunked = chunk(sentences, 10)
+  return await Promise.all(
+    chunked.map((sentences, chunkIndex) => {
+      const sentencesWithEmebeddings = sentences.map((sentence, i) => {
+        const sentenceIndex = chunkIndex * 10 + i
         return {
           text: sentence,
-          embedding: embeddings[i][j],
+          embedding: embeddings[sentenceIndex],
+          sentenceIndex,
         }
       })
-      return fbSet("rawParagraph", `${docKey}-${language}-${i}`, {
+      return fbSet("rawParagraph", `${docKey}-${languageId}-${chunkIndex}`, {
         sentences: sentencesWithEmebeddings,
         docKey,
-        language: language,
+        language: languageId,
+        chunkIndex,
       })
     })
   )
 }
 
-export const prepEmbedding = functions.https.onRequest(async (req, res) => {
-  const [enSentencesSplit, zhSentencesSplit] = await getSents()
-  const enParagraphs = enSentencesSplit.results as Paragraph[]
-  const zhParagraphs = zhSentencesSplit.results as Paragraph[]
+const removeNewLines = (text: string) => {
+  return text.replace(/(\r\n|\n|\r)/gm, "")
+}
 
-  const [enSentencesEmbeddings, zhSentencesEmbeddings] = await getEmbeddings(
-    enParagraphs.map((_) => _.sentences),
-    zhParagraphs.map((_) => _.sentences)
-  )
-
-  const enEmbeddings = enSentencesEmbeddings.results.embeddings as number[][][]
-  const zhEmbeddings = zhSentencesEmbeddings.results.embeddings as number[][][]
-
-  await Promise.all([
-    saveEmbeddingsAndParagraphs(enParagraphs, enEmbeddings, "en"),
-    saveEmbeddingsAndParagraphs(zhParagraphs, zhEmbeddings, "zh"),
+const prepEmbeddingFn = async (lang1Text: string, lang2Text: string) => {
+  const [lang1SentencesSplit, lang2SentencesSplit] = await Promise.all([
+    getSents(lang1Text),
+    getSents(lang2Text),
   ])
 
+  const [
+    lang1SentencesEmbeddings,
+    lang2SentencesEmbeddings,
+  ] = await Promise.all([
+    getEmbeddings(lang1SentencesSplit),
+    getEmbeddings(lang2SentencesSplit),
+  ])
+
+  await Promise.all([
+    saveEmbeddingsAndParagraphs(
+      lang1SentencesSplit,
+      lang1SentencesEmbeddings,
+      "1"
+    ),
+    saveEmbeddingsAndParagraphs(
+      lang2SentencesSplit,
+      lang2SentencesEmbeddings,
+      "2"
+    ),
+  ])
+}
+
+export const prepEmbedding = functions.https.onRequest(async (req, res) => {
+  await prepEmbeddingFn(english, chinese)
   res.send("done")
 })

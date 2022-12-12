@@ -10,6 +10,7 @@ import { Document } from "../types/Document"
 import { DocumentEntry } from "../types/DocumentEntry"
 import { VocabEntry } from "../types/VocabEntry"
 import { RawParagraph } from "../types/RawParagraph"
+import { DocumentJob } from "../types/DocumentJob"
 
 export const CollectionsWithConverters: {
   [key in keyof CollectionModels]: FirestoreDataConverter<CollectionModels[key]>
@@ -22,6 +23,7 @@ export const CollectionsWithConverters: {
   documentEntry: buildConverterForType<DocumentEntry>(),
   vocabEntry: buildConverterForType<VocabEntry>(),
   rawParagraph: buildConverterForType<RawParagraph>(),
+  documentJob: buildConverterForType<DocumentJob>(),
 }
 
 export type AllModels = {
@@ -34,6 +36,7 @@ export type AllModels = {
   vocabEntry: VocabEntry
   documentEntry: DocumentEntry
   rawParagraph: RawParagraph
+  documentJob: DocumentJob
 }
 
 export type CollectionModels = Omit<AllModels, "user">
