@@ -1,6 +1,9 @@
 import { prepEmbedding } from "./prepEmbedding"
 import * as firebase from "firebase-admin/app"
 import "./fixTsPaths"
+import { triggerEmbeddingPreparationOnJobCreate } from "./triggers/triggerEmbeddingPreparationOnJobCreate"
+import { translateTextTask } from "./tasks/translateTextTask"
+import { prepareEmbeddingsTask } from "./tasks/prepareEmbeddingsTask"
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -12,4 +15,9 @@ import "./fixTsPaths"
 
 firebase.initializeApp()
 
-export { prepEmbedding }
+export {
+  prepEmbedding,
+  prepareEmbeddingsTask,
+  triggerEmbeddingPreparationOnJobCreate,
+  translateTextTask,
+}

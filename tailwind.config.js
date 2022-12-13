@@ -35,6 +35,7 @@ module.exports = {
       colors: {
         current: colors.blue,
         primary: colors.teal,
+        error: colors.rose,
         secondary: colors.green,
         defaultOutline: "rgba(0, 0, 0, 0.23)",
       },

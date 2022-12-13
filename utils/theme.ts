@@ -15,14 +15,21 @@ const theme = createTheme({
         },
       },
     },
+    MuiInputBase: {
+      defaultProps: {
+        inputProps: {
+          className: "p-4",
+        },
+      },
+    },
   },
   palette: {
     primary: {
-      main: colors.orange[400],
+      main: colors.red[300],
       contrastText: colors.white,
     },
     secondary: {
-      main: colors.rose[400],
+      main: colors.orange[300],
       contrastText: colors.white,
     },
     info: {

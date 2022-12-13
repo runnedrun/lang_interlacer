@@ -7,9 +7,12 @@ export type DocumentJob = Model<
   {
     lang1Text?: string
     lang2Text?: string
+    lang1Sentences?: string[]
+    lang2Sentences?: string[]
     provideTranslation?: boolean
     targetLanguage?: Language
     generatePinyin?: boolean
     startJob?: Timestamp
+    jobComplete?: Timestamp
   }
 >

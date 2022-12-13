@@ -22,7 +22,7 @@ import { combine } from "../paramObsBuilders/combine"
 import { ValueTypeFromParamObs } from "../paramObsBuilders/ParamObsTypeUtils"
 import { CollectionModels } from "./CollectionModels"
 
-type KeyError = {
+export type KeyError = {
   message: string
 }
 
@@ -49,6 +49,12 @@ type BeforeWrite<DataType extends Record<string, any>> = (args: {
   errors: ErrorType<DataType>
 }) => DataType
 
+type ModifyWrite<DataType extends Record<string, any>> = (args: {
+  data: DataType
+  baseData: DataType
+  errors: ErrorType<DataType>
+}) => DataType
+
 export enum EditingState {
   Editing,
   Saved,
@@ -72,6 +78,7 @@ export const fbWriter = <
   options: {
     beforeWrite?: BeforeWrite<BaseValueType>
     afterWrite?: (data: BaseValueType, dataBeforeWrite: BaseValueType) => void
+    modifyWrite?: ModifyWrite<BaseValueType>
     autoSave?: boolean
     onCreate?: (arg: {
       id: ForeignKey<CollectionNameType>
@@ -106,7 +113,6 @@ export const fbWriter = <
     }),
     map(([prev, current]) => current[0]),
     tap((baseValue) => {
-      console.log("setting", baseValue)
       dataToWriteSubject.next(baseValue)
     })
   )
@@ -185,7 +191,8 @@ export const fbWriter = <
         currentState === EditingState.Saved &&
         prevState === EditingState.Editing
 
-      const timeToSave = editingComplete || options.autoSave
+      const timeToSave =
+        editingComplete || (options.autoSave && EditingState.Editing)
 
       return {
         errors: errors,
@@ -194,13 +201,22 @@ export const fbWriter = <
         editingState: currentState,
         isCreate: !baseData,
         dataBeforeWrite: baseData,
+        editingComplete,
         shouldWrite: !errors.hasError && !!processedToWrite && timeToSave,
       }
     }),
     tap(async (dataAndErrors) => {
       if (dataAndErrors.shouldWrite) {
         const uid = dataAndErrors.data.uid
-        const cleanForWrite = { ...dataAndErrors.data }
+        const modifyWriteFn =
+          dataAndErrors.editingComplete && options.modifyWrite
+            ? options.modifyWrite
+            : ({ data }) => data as ModifyWrite<any>
+        const cleanForWrite = modifyWriteFn({
+          data: { ...dataAndErrors.data },
+          baseData: dataAndErrors.dataBeforeWrite,
+          errors: dataAndErrors.errors,
+        })
         delete cleanForWrite["hydrated"]
         delete cleanForWrite["uid"]
 

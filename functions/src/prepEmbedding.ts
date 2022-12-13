@@ -48,7 +48,7 @@ const getSentsFromServer = async (text: string) => {
   ).results
 }
 
-const getSents = async (text: string) => {
+export const getSents = async (text: string) => {
   const clean = removeNewLines(text)
 
   const textIsLatin = isLatin(clean.slice(0, 10))
@@ -62,7 +62,7 @@ const getSents = async (text: string) => {
   return cleanResults as string[]
 }
 
-const getEmbeddings = async (sentences: string[]) => {
+export const getEmbeddings = async (sentences: string[]) => {
   const embeddingResp = await fetch(embeddingsUrl, {
     method: "POST",
     body: JSON.stringify({
@@ -79,10 +79,11 @@ const getEmbeddings = async (sentences: string[]) => {
 
 const docKey = "hp-2"
 
-const saveEmbeddingsAndParagraphs = async (
+export const saveEmbeddingsAndParagraphs = async (
   sentences: string[],
   embeddings: number[][],
-  languageId: string
+  languageId: string,
+  docKey: string
 ) => {
   const chunked = chunk(sentences, 10)
   return await Promise.all(
@@ -127,12 +128,14 @@ const prepEmbeddingFn = async (lang1Text: string, lang2Text: string) => {
     saveEmbeddingsAndParagraphs(
       lang1SentencesSplit,
       lang1SentencesEmbeddings,
-      "1"
+      "1",
+      docKey
     ),
     saveEmbeddingsAndParagraphs(
       lang2SentencesSplit,
       lang2SentencesEmbeddings,
-      "2"
+      "2",
+      docKey
     ),
   ])
 }
