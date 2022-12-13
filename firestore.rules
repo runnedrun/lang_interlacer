@@ -5,5 +5,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if false;
     }
+    match /documentJob/{recordId} {
+      allow read: if true;
+      allow write: if true;
+    }
   }
 }

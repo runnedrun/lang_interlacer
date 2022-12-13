@@ -18,11 +18,11 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: colors.teal[400],
+      main: colors.orange[400],
       contrastText: colors.white,
     },
     secondary: {
-      main: colors.green[400],
+      main: colors.rose[400],
       contrastText: colors.white,
     },
     info: {

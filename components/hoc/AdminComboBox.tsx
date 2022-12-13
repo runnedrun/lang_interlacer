@@ -26,11 +26,13 @@ export const AdminComboxBox = <
   getValueFromId,
   getIdFromValue,
   autocompleteOptions = { renderLabel: (_) => _.toString() },
+  disabled,
 }: Pick<SingleFieldEditableProps<ValueType>, "update" | "value"> & {
   getIdFromValue: (value: GetArrayOrValueType<ValueType>) => OptionIdType
   getValueFromId: (id: OptionIdType) => GetArrayOrValueType<ValueType>
   options: OptionIdType[]
   autocompleteOptions?: AutocompleteOptions<ValueType, IsMultiSelect>
+  disabled?: boolean
 }) => {
   const ref = useFieldDisplayAutofocus()
 
@@ -62,6 +64,7 @@ export const AdminComboxBox = <
   return (
     <Autocomplete
       {...renderOptionProp}
+      disabled={disabled}
       fullWidth
       isOptionEqualToValue={isEqual}
       disablePortal

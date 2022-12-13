@@ -12,7 +12,7 @@
     "start": "next start -p 8080",
     "lint": "next lint",
     "build-functions": "webpack --watch ",
-    "emulate": "firebase emulators:start --project xqchinese-325dd"
+    "emulate": "firebase emulators:start --project demo-xqchinese"
   },
   "dependencies": {
     "@emotion/cache": "latest",
@@ -65,7 +65,7 @@
     "file-loader": "^6.2.0",
     "firebase": "^9.1.2",
     "firebase-admin": "^10.0.0",
-    "firebase-functions": "^3.21.2",
+    "firebase-functions": "^4.1.1",
     "flexsearch": "0.7.21",
     "headlessui": "^0.0.0",
     "hotkeys-js": "^3.8.7",
