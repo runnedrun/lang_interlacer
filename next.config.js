@@ -1,11 +1,15 @@
 /** @type {import('next').NextConfig} */
 
-const { withSentryConfig } = require("@sentry/nextjs")
-const CircularDependencyPlugin = require("circular-dependency-plugin")
-
-const prodHost = "https://send.hylitepeople.com"
-
 const config = {
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/new_doc",
+        permanent: false,
+      },
+    ]
+  },
   reactStrictMode: false,
   // swcMinify: true,
   // typescript: { tsconfigPath: "tsconfig.next.json" },
