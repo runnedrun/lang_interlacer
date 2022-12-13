@@ -11,7 +11,3 @@ export type ModelFromArrayParamObs<
 > = ParamObs extends ParamaterizedObservable<any, (infer ModelType)[], any>
   ? ModelType
   : never
-
-export type ValueFromArrayParamObsFn<
-  ObsFn extends (any) => ParamaterizedObservable<any, any[], any>
-> = ValueTypeFromArrayParamObs<ReturnType<ObsFn>>
