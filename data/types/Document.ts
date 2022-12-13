@@ -7,6 +7,13 @@ import { User } from "./User"
 export type Document = Model<
   "document",
   {
+    chinseSettings: {
+      showPinyin: boolean
+      splitWords: boolean
+    }
+    technicalSettings: {
+      showScores: boolean
+    }
     subtitle: string
     title: string
     headerImageHref?: Optional<string>

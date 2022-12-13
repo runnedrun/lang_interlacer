@@ -74,7 +74,7 @@ export const triggerEmbeddingPreparationOnJobCreate = functions.firestore
       return
     }
 
-    console.log("lang", Language[newData.targetLanguage])
+    console.log("lang", newData.targetLanguage)
 
     const lang1SentencesPromise = getAndCacheSentences(
       newData.lang1Text,
@@ -97,12 +97,10 @@ export const triggerEmbeddingPreparationOnJobCreate = functions.firestore
       lang2SentencesPromise,
     ])
 
-    console.log("lang2 sent", lang2Sentences)
-
     if (!lang2Sentences) {
       const taskData: TranslateTextTaskData = {
         sentences: lang1Sentences,
-        targetLang: Language[newData.targetLanguage],
+        targetLang: newData.targetLanguage as any,
         docJobKey: change.after.id,
       }
       return startTranslationTask(taskData)

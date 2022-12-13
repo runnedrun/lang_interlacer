@@ -1,4 +1,5 @@
 import { filtered } from "@/data/paramObsBuilders/filtered"
+import { settable } from "@/data/paramObsBuilders/settable"
 import { staticValue } from "@/data/paramObsBuilders/staticValue"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
 import { Sentence } from "@/data/types/RawParagraph"
@@ -16,7 +17,6 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
       "rawParagraph",
       {
         docKey: stringParam("docKey"),
-        // docKey: staticValue("nyt-1"),
         language: staticValue("1"),
       },
       { orderBy: { chunkIndex: staticValue("desc") } }
@@ -25,7 +25,6 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
       "rawParagraph",
       {
         docKey: stringParam("docKey"),
-        // docKey: staticValue("nyt-1"),
         language: staticValue("2"),
       },
       { orderBy: { chunkIndex: staticValue("desc") } }
@@ -98,7 +97,13 @@ const DocDisplay = component(dataFunc, ({ enParagraphs, zhParagraphs }) => {
   extraZhCluster && chunks.push(extraZhCluster)
   extraEnCluster && chunks.push(extraEnCluster)
 
-  return <ChunksDisplay chunks={chunks} />
+  return (
+    <div className="w-full flex justify-center mt-5">
+      <div className="w-2/3 max-w-2xl">
+        <ChunksDisplay chunks={chunks} />
+      </div>
+    </div>
+  )
 })
 
 export const getServerSideProps = buildPrefetchHandler(dataFunc)

@@ -25,7 +25,9 @@ export const AdminComboxBox = <
   options,
   getValueFromId,
   getIdFromValue,
-  autocompleteOptions = { renderLabel: (_) => _.toString() },
+  autocompleteOptions = {
+    renderLabel: (_) => (typeof _ === "number" ? String(_) : _),
+  },
   disabled,
 }: Pick<SingleFieldEditableProps<ValueType>, "update" | "value"> & {
   getIdFromValue: (value: GetArrayOrValueType<ValueType>) => OptionIdType
@@ -37,7 +39,7 @@ export const AdminComboxBox = <
   const ref = useFieldDisplayAutofocus()
 
   const optionItems = options.map((_) => ({
-    id: _,
+    id: getIdFromValue(_ as any),
   }))
 
   const renderOptionProp = autocompleteOptions.renderOption
@@ -83,9 +85,10 @@ export const AdminComboxBox = <
         />
       )}
       getOptionLabel={(option) => {
-        return option
+        const label = option
           ? autocompleteOptions.renderLabel(getValueFromId(option.id))
           : ""
+        return label
       }}
       onChange={(v, newValue) => {
         let selectedValueIdOrIds = null
@@ -96,7 +99,6 @@ export const AdminComboxBox = <
             ? null
             : getValueFromId(newValue?.id)
         }
-
         update(selectedValueIdOrIds as GetArrayOrValueType<ValueType>)
       }}
     />

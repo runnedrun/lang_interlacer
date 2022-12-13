@@ -1,4 +1,7 @@
-import { buildStringEnumSelector } from "@/components/hoc/buildEnumSelector"
+import {
+  buildStringEnumSelector,
+  getFromStringEnum,
+} from "@/components/hoc/buildEnumSelector"
 import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
 import { EditingState, fbWriter } from "@/data/firebaseObsBuilders/fbWriter"
 import { settable } from "@/data/paramObsBuilders/settable"
@@ -23,22 +26,25 @@ import Link from "next/link"
 import React from "react"
 
 const TranslationDescription = ({
-  provideTranslation,
+  generateTranslation,
 }: {
-  provideTranslation: boolean
+  generateTranslation: boolean
 }) => {
-  return provideTranslation ? (
-    <div>Paste in the translation for the text that you want to interlace.</div>
-  ) : (
+  return generateTranslation ? (
     <div>
       {`Just paste in the original text below and we'll translate it for you, then interlace it with the original.`}
+    </div>
+  ) : (
+    <div>
+      Paste in the original and the translation for the text that you want to
+      interlace.
     </div>
   )
 }
 
 const LanguageSelector = buildStringEnumSelector(Language, {
-  renderLabel: (_) => Language[_],
   inputLabel: "Target Language",
+  renderLabel: (_) => _,
 })
 
 const MAX_TEXT_LENGTH = 10000
@@ -57,7 +63,7 @@ const dataFunc = () => {
         setError("lang1Text", "Please enter some text")
       }
 
-      if (data.provideTranslation) {
+      if (!data.generateTranslation) {
         if (data.lang2Text?.length > MAX_TEXT_LENGTH) {
           setError("lang2Text", "Text is too long")
         } else if (!data.lang2Text?.length) {
@@ -65,8 +71,7 @@ const dataFunc = () => {
         }
       }
 
-      console.log("adta", data.provideTranslation, data.targetLanguage)
-      if (!data.provideTranslation && !data.targetLanguage) {
+      if (data.generateTranslation && !data.targetLanguage) {
         setError("targetLanguage", "Please select a target language")
       }
 
@@ -146,43 +151,56 @@ const NewDocView = component(
     return (
       <div className="w-full flex justify-center">
         <div className="w-2/3 justify-center max-w-3xl">
+          <div className="text-5xl mt-5 text-center">Language Interlacer</div>
           <div className="gap-5 flex flex-col w-full p-5">
-            <div>
-              <FormControl disabled={jobStarted}>
-                <ToggleButtonGroup
-                  color="primary"
-                  value={!!currentData.provideTranslation}
-                  exclusive
-                  onChange={(_, value) =>
-                    updateField("provideTranslation", value)
-                  }
-                  aria-label="Platform"
-                >
-                  <ToggleButton value={true}>Use my translation</ToggleButton>
-                  <ToggleButton value={false}>Translate for me</ToggleButton>
-                </ToggleButtonGroup>
-              </FormControl>
-              <div className="text-sm p-2">
-                <TranslationDescription
-                  provideTranslation={currentData.provideTranslation}
-                ></TranslationDescription>
+            <div className="flex flex-col items-center mb-5">
+              <div className="flex mb-5">
+                <FormControl disabled={jobStarted}>
+                  <ToggleButtonGroup
+                    color="primary"
+                    value={!!currentData.generateTranslation}
+                    exclusive
+                    onChange={(_, value) =>
+                      updateField("generateTranslation", value)
+                    }
+                    aria-label="Platform"
+                  >
+                    <ToggleButton value={false}>
+                      Use my translation
+                    </ToggleButton>
+                    <ToggleButton value={true}>Translate for me</ToggleButton>
+                  </ToggleButtonGroup>
+                </FormControl>
               </div>
-              {!currentData.provideTranslation && (
+              <div className="max-w-sm">
+                <div className="text-sm p-2 mb-3">
+                  <TranslationDescription
+                    generateTranslation={currentData.generateTranslation}
+                  ></TranslationDescription>
+                </div>
                 <div>
-                  {errors.byKey["targetLanguage"] && (
-                    <div className="text-error-400">
-                      {errors.byKey["targetLanguage"].message}
+                  {currentData.generateTranslation && (
+                    <div>
+                      {errors.byKey["targetLanguage"] && (
+                        <div className="text-error-400">
+                          {errors.byKey["targetLanguage"].message}
+                        </div>
+                      )}
+                      <LanguageSelector
+                        update={(_) => {
+                          console.log("update", Language[_])
+                          updateField("targetLanguage", Language[_])
+                        }}
+                        value={getFromStringEnum(
+                          Language,
+                          currentData.targetLanguage
+                        )}
+                        disabled={jobStarted}
+                      ></LanguageSelector>
                     </div>
                   )}
-                  <LanguageSelector
-                    update={(_) => {
-                      updateField("targetLanguage", _)
-                    }}
-                    value={Language[currentData.targetLanguage]}
-                    disabled={jobStarted}
-                  ></LanguageSelector>
                 </div>
-              )}
+              </div>
             </div>
 
             <div className="w-full mb-10">
@@ -211,7 +229,7 @@ const NewDocView = component(
                 />
               </FormControl>
             </div>
-            {currentData.provideTranslation && (
+            {!currentData.generateTranslation && (
               <div className="w-full">
                 <FormControl
                   className="w-full"

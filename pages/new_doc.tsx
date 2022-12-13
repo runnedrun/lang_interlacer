@@ -1,4 +1,5 @@
 import { creators } from "@/data/fb"
+import { CircularProgress } from "@mui/material"
 import { useEffect } from "react"
 
 const GenNewDocView = () => {
@@ -8,7 +9,11 @@ const GenNewDocView = () => {
     })
   }, [])
 
-  return <div>One moment...</div>
+  return (
+    <div className="w-full flex justify-center h-full items-center">
+      <CircularProgress size="6rem" />
+    </div>
+  )
 }
 
 export default GenNewDocView

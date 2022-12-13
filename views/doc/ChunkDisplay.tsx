@@ -22,8 +22,8 @@ export const ChunkDisplay = ({
 }) => {
   return (
     <div className="flex flex-col">
-      <div>{chunkIndex}</div>
-      <div className="font-bold text-lg">{chunk.score}</div>
+      {/* <div>{chunkIndex}</div> */}
+      {/* <div className="font-bold text-lg">{chunk.score}</div> */}
       <div className="mt-2">
         {chunk.lang1.map((_, i) => (
           <SentenceDisplay

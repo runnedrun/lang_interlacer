@@ -28,9 +28,9 @@ export const buildEnumSelector = <
   )
 }
 
-const getFromStringEnum = <T extends Record<string, string>>(
+export const getFromStringEnum = <T extends Record<string, string>>(
   enumObj: T,
-  key: string
+  key: string | number | symbol
 ) => {
   const entry = Object.entries(enumObj).find(([k, v]) => v === key)
   return entry ? entry[0] : undefined
@@ -41,21 +41,24 @@ export const buildStringEnumSelector = <
 >(
   optionsEnum: OptionsEnumType,
   autocompleteOptions: AutocompleteOptions<string, false> = {
-    renderLabel: (_) => _.toString(),
+    renderLabel: (_) => _,
   }
-) => (props: SingleFieldEditableProps<number> & { disabled?: boolean }) => {
-  const options = objKeys(optionsEnum).map((_) => _.toString())
+) => (props: SingleFieldEditableProps<string> & { disabled?: boolean }) => {
+  const options = objKeys(optionsEnum).map((_) => String(_))
+
+  if (!autocompleteOptions.renderLabel) {
+    autocompleteOptions.renderLabel = (_) => _
+  }
 
   return (
     <AdminComboxBox
       options={options}
       getIdFromValue={(_) => {
-        const value = Language[_]
-
-        return getFromStringEnum(Language, _ as any)
+        return optionsEnum[_]
       }}
       getValueFromId={(_) => {
-        return _ as any
+        const value = getFromStringEnum(optionsEnum, _)
+        return value as any
       }}
       autocompleteOptions={autocompleteOptions as any}
       {...props}
