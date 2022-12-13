@@ -1,3 +1,6 @@
+import { AnyGenericModel } from "@/data/baseTypes/Model"
+import { CollectionModels } from "@/data/firebaseObsBuilders/CollectionModels"
+import { ValueFromArrayParamObsFn } from "@/data/paramObsBuilders/ParamObsTypeUtils"
 import { getItemFromModelList } from "@/data/viewDataHelpers/getItemFromModelList"
 import { component } from "@/views/view_builder/component"
 import {
@@ -8,10 +11,10 @@ import {
 export const buildSingleDocumentDisplay: DocumentDisplayBuilder<{
   docKey: string
 }> = (collectionName, dataObsFn) => (adminDisplaySpec, options) => {
-  const ComponentFromDoc = buildDocumentDisplayFromFieldDisplays(
-    collectionName,
-    dataObsFn
-  )(adminDisplaySpec, options)
+  const ComponentFromDoc = buildDocumentDisplayFromFieldDisplays<
+    typeof collectionName,
+    ValueFromArrayParamObsFn<typeof dataObsFn>
+  >(collectionName)(adminDisplaySpec, options)
 
   const ComponentFromDocKey = component(
     (renderId) => {

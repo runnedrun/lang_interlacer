@@ -106,6 +106,7 @@ export const fbWriter = <
     }),
     map(([prev, current]) => current[0]),
     tap((baseValue) => {
+      console.log("setting", baseValue)
       dataToWriteSubject.next(baseValue)
     })
   )

@@ -1,5 +1,6 @@
 import { AnyGenericModel } from "@/data/baseTypes/Model"
 import { isFieldDisplay } from "@/data/fieldDisplayComponents/isFieldDisplay"
+import { ValueFromArrayParamObsFn } from "@/data/paramObsBuilders/ParamObsTypeUtils"
 import { component } from "@/views/view_builder/component"
 import {
   LazyLoadComponent,
@@ -15,10 +16,10 @@ export const buildPanelViewFromFieldDisplays: DocumentDisplayBuilder<{}> = (
   collectionName,
   dataObsFn
 ) => (adminDisplaySpec, options) => {
-  const Component = buildDocumentDisplayFromFieldDisplays(
-    collectionName,
-    dataObsFn
-  )(adminDisplaySpec, options)
+  const Component = buildDocumentDisplayFromFieldDisplays<
+    typeof collectionName,
+    ValueFromArrayParamObsFn<typeof dataObsFn>
+  >(collectionName)(adminDisplaySpec, options)
 
   const placeholder = <div className="h-96"></div>
 
@@ -59,7 +60,9 @@ export const buildPanelViewFromFieldDisplays: DocumentDisplayBuilder<{}> = (
                   scrollPosition={scrollPosition}
                   placeholder={placeholder}
                 >
-                  <Component doc={doc}></Component>
+                  <Component
+                    doc={doc as ValueFromArrayParamObsFn<typeof dataObsFn>}
+                  ></Component>
                 </LazyLoadComponent>
               </div>
             )

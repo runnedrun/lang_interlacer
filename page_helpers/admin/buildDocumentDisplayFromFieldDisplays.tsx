@@ -1,6 +1,9 @@
 import { ForeignKey } from "@/data/baseTypes/ForeignKey"
-import { AnyGenericModel } from "@/data/baseTypes/Model"
-import { SingleFieldEditableProps } from "@/data/fieldDisplayComponents/fieldDisplayComponentsBuilders"
+import { AnyGenericModel, Model } from "@/data/baseTypes/Model"
+import {
+  FieldDisplayComponents,
+  SingleFieldEditableProps,
+} from "@/data/fieldDisplayComponents/fieldDisplayComponentsBuilders"
 import { isFieldDisplay } from "@/data/fieldDisplayComponents/isFieldDisplay"
 import { CollectionModels } from "@/data/firebaseObsBuilders/CollectionModels"
 import { EditingState, fbWriter } from "@/data/firebaseObsBuilders/fbWriter"
@@ -8,6 +11,7 @@ import { ParamaterizedObservable } from "@/data/ParamaterizedObservable"
 import {
   ArgsTypeFromParamObs,
   ValueTypeFromArrayParamObs,
+  ValueTypeFromParamObs,
 } from "@/data/paramObsBuilders/ParamObsTypeUtils"
 import { prop } from "@/data/paramObsBuilders/prop"
 import { settable } from "@/data/paramObsBuilders/settable"
@@ -27,6 +31,7 @@ import {
 } from "./buildColumnDef"
 import {
   ControlComponentsMapFromArgs,
+  FieldDisplayFromModel,
   FieldDisplayFromRowsObservable,
   FieldDisplays,
 } from "./buildDataGridForFieldDisplays"
@@ -192,12 +197,23 @@ export type DocumentDisplayBuilder<
       >
 ) => React.ComponentType<OutputComponentPropsType>
 
-export const buildDocumentDisplayFromFieldDisplays: DocumentDisplayBuilder<
-  {
-    doc: AnyGenericModel
-  },
-  "single"
-> = (collectionName, dataObsFn) => (fieldDisplays, options) => {
+export const buildDocumentDisplayFromFieldDisplays = <
+  CollectionName extends keyof CollectionModels,
+  ModelType extends CollectionModels[CollectionName] = CollectionModels[CollectionName]
+>(
+  collectionName: CollectionName
+) => (
+  fieldDisplays: FieldDisplays<
+    FieldDisplayComponents<Model<any, {}> & Partial<ModelType>, any>
+  >,
+  options: SingleDocumentDisplayOptions<
+    CollectionName,
+    ModelType,
+    keyof FieldDisplays<
+      FieldDisplayComponents<Model<any, {}> & Partial<ModelType>, any>
+    >
+  >
+) => {
   const {
     documentDisplay,
     columnActions = [],
@@ -222,10 +238,7 @@ export const buildDocumentDisplayFromFieldDisplays: DocumentDisplayBuilder<
     (renderId) => {
       const writer = fbWriter(
         collectionName,
-        prop(
-          "doc",
-          undefined as ValueTypeFromArrayParamObs<ReturnType<typeof dataObsFn>>
-        ),
+        prop("doc", undefined as ModelType),
         {
           beforeWrite: ({ data, setError }) => {
             objKeys(fieldDisplays).forEach((fieldName) => {
