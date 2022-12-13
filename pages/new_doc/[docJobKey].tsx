@@ -133,8 +133,6 @@ const NewDocView = component(
   }) => {
     const jobStarted = !!currentData.startJob
 
-    console.log("has", errors)
-
     const bottomBar = (
       <div className="flex justify-end gap-4 flex-wrap items-center">
         {jobStarted && <JobProgressBar docJob={currentData} />}
@@ -188,7 +186,6 @@ const NewDocView = component(
                       )}
                       <LanguageSelector
                         update={(_) => {
-                          console.log("update", Language[_])
                           updateField("targetLanguage", Language[_])
                         }}
                         value={getFromStringEnum(
