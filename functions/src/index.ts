@@ -4,6 +4,7 @@ import "./fixTsPaths"
 import { triggerEmbeddingPreparationOnJobCreate } from "./triggers/triggerEmbeddingPreparationOnJobCreate"
 import { translateTextTask } from "./tasks/translateTextTask"
 import { prepareEmbeddingsTask } from "./tasks/prepareEmbeddingsTask"
+import { addPronunciationToChunksCallable } from "./callable/addPronunciationToChunksCallable"
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -20,4 +21,5 @@ export {
   prepareEmbeddingsTask,
   triggerEmbeddingPreparationOnJobCreate,
   translateTextTask,
+  addPronunciationToChunksCallable,
 }

@@ -2,6 +2,12 @@ import { Timestamp } from "@firebase/firestore"
 import { Model } from "../baseTypes/Model"
 import { Language } from "./RawParagraph"
 
+export type DocumentJobSettings = {
+  showPronunciation?: boolean
+  splitWords?: boolean
+  showScores?: boolean
+}
+
 export type DocumentJob = Model<
   "documentJob",
   {
@@ -14,5 +20,6 @@ export type DocumentJob = Model<
     generatePinyin?: boolean
     startJob?: Timestamp
     jobCompletedAt?: Timestamp
+    settings?: DocumentJobSettings
   }
 >

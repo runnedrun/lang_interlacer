@@ -1,35 +1,62 @@
+import { ForeignKey } from "@/data/baseTypes/ForeignKey"
+import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
 import { filtered } from "@/data/paramObsBuilders/filtered"
 import { staticValue } from "@/data/paramObsBuilders/staticValue"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
 import { memoizeDataFunc } from "@/helpers/memoizeDataFunc"
 import { buildCachedParamObsForChunks } from "@/views/doc/buildCachedParamObsForChunks"
 import { ChunksDisplay } from "@/views/doc/ChunksDisplay"
+import { DocPreviewHeader } from "@/views/doc/DocPreviewHeader"
 import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
 import { OrderByDirection } from "@firebase/firestore"
 import React from "react"
+import { map } from "rxjs"
 
 const dataFunc = memoizeDataFunc((renderId: string) => {
+  const param = stringParam(
+    "docKey",
+    undefined as ForeignKey<"documentJob">
+  ).log("paramssss")
   const chunksObs = buildCachedParamObsForChunks(
     filtered(
       "rawParagraph",
       {
-        docKey: stringParam("docKey"),
+        docKey: param,
         language: staticValue("1"),
       },
-      { orderBy: { chunkIndex: staticValue("desc" as OrderByDirection) } }
+      {
+        orderBy: {
+          chunkIndex: staticValue("desc" as OrderByDirection),
+        },
+        limit: staticValue(2),
+      }
     ),
     filtered(
       "rawParagraph",
       {
-        docKey: stringParam("docKey"),
+        docKey: param,
         language: staticValue("2"),
       },
-      { orderBy: { chunkIndex: staticValue("desc" as OrderByDirection) } }
-    )
+      {
+        orderBy: {
+          chunkIndex: staticValue("desc" as OrderByDirection),
+        },
+        limit: staticValue(2),
+      }
+    ),
+    staticValue({ showPronunciation: true })
+    // docForKey("documentJob", param)
+    //   .pipe(
+    //     map((_) => {
+    //       return _.settings
+    //     })
+    //   )
+    //   .log("docsss")
   )
 
   return {
+    docKey: param,
     chunks: chunksObs,
   }
 })
@@ -52,11 +79,14 @@ export const compareSelections = (
   })
 }
 
-const DocDisplay = component(dataFunc, ({ chunks }) => {
+const DocDisplay = component(dataFunc, ({ chunks, docKey }) => {
   return (
     <div className="w-full flex justify-center mt-5">
-      <div className="w-2/3 max-w-2xl">
-        <ChunksDisplay chunks={chunks} />
+      <div className="md:w-2/3 md:p-0 max-w-2xl px-5 h-screen flex flex-col">
+        <DocPreviewHeader docKey={docKey} />
+        <div className="overflow-auto">
+          <ChunksDisplay chunks={chunks} />
+        </div>
       </div>
     </div>
   )

@@ -3,7 +3,7 @@ import { sortBy } from "lodash"
 import { Chunk } from "./ChunkDisplay"
 import { matchSentences } from "./matchSentences"
 
-export const buildChunks = (
+export const buildChunksFromEmbeddings = (
   lang1Paragraphs: RawParagraph[],
   lang2Paragraphs: RawParagraph[]
 ): Chunk[] => {

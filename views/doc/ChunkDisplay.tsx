@@ -6,8 +6,14 @@ import { SentenceDisplay } from "./SentenceDisplay"
 export type Chunk = {
   lang1: Sentence[]
   lang2: Sentence[]
+  lang1Pronunciation?: Sentence[]
+  lang2Pronunciation?: Sentence[]
   score: number
 }
+
+// const PronunciationDisplay = ({ sentences }: { sentences: Sentence[] }) => {
+
+// }
 
 export const ChunkDisplay = ({
   chunk,

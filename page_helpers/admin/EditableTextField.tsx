@@ -79,7 +79,13 @@ export const EditableTextField = <
         }}
       />
       {anchorEl && (
-        <Popper open anchorEl={anchorEl} placement="bottom-start">
+        <Popper
+          open
+          anchorEl={anchorEl}
+          placement="bottom-start"
+          components={{}}
+          componentsProps={{}}
+        >
           <Paper elevation={1} sx={{ p: 1, minWidth: "100%" }}>
             {input}
           </Paper>
