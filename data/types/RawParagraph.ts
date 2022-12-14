@@ -1,6 +1,7 @@
 import { Model } from "../baseTypes/Model"
 
 export enum Language {
+  English = "en",
   Spanish = "es",
   Chinese = "zh",
   French = "fr",
