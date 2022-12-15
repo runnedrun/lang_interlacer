@@ -107,11 +107,9 @@ const JobProgressBar = ({ docJob }: { docJob: DocumentJob }) => {
 
   const text =
     progress === 100 ? (
-      <Link href={`/doc/${docJob.uid}`} passHref>
-        <div className="underline hover:text-blue-400">
-          Done! Click here to see results.
-        </div>
-      </Link>
+      <div className="underline hover:text-blue-400">
+        <a href={`/doc/${docJob.uid}`}>Done! Click here to see results.</a>
+      </div>
     ) : (
       <div className="text-xs">Processing, may take a few minutes...</div>
     )
