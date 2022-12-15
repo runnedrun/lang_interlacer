@@ -43,7 +43,7 @@ export const useWorkerForParamObs = <
   inputObs: InputObsType,
   workerFn: () => Worker,
   extraValues: GetWorkerExtraType<WorkerInputType>,
-  executeSync?: (
+  execWithoutWorker?: (
     input: ValueTypeFromParamObs<InputObsType>
   ) => Observable<GetWorkerOuput<WorkerOutputType>>
 ): ParamaterizedObservable<
@@ -53,8 +53,8 @@ export const useWorkerForParamObs = <
 > => {
   return inputObs.pipe(
     switchMap((value) => {
-      if (executeSync && (returnSynchronously || isServerside())) {
-        return executeSync(value)
+      if (execWithoutWorker && (returnSynchronously || isServerside())) {
+        return execWithoutWorker(value)
       } else {
         return fromWorkerPool<WorkerInputType, WorkerOutputType>(
           workerFn,

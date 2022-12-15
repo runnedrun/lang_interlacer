@@ -26,6 +26,18 @@ export const ChunkDisplay = ({
   onSelect: (args: SelectedSentence) => void
   currentSelection: SelectedSentence[]
 }) => {
+  const lang1PronunciationDisplay = chunk.lang1Pronunciation
+    ? chunk.lang1Pronunciation.map((_, i) => (
+        <SentenceDisplay key={i} sentence={_} />
+      ))
+    : null
+
+  const lang2PronunciationDisplay = chunk.lang2Pronunciation
+    ? chunk.lang2Pronunciation.map((_, i) => (
+        <SentenceDisplay key={i} sentence={_} />
+      ))
+    : null
+
   return (
     <div className="flex flex-col">
       {/* <div>{chunkIndex}</div> */}
@@ -50,6 +62,7 @@ export const ChunkDisplay = ({
           />
         ))}
       </div>
+      <div className="mt-2">{lang1PronunciationDisplay}</div>
       <div className="mt-2">
         {chunk.lang2.map((_, i) => (
           <SentenceDisplay
@@ -70,6 +83,7 @@ export const ChunkDisplay = ({
           />
         ))}
       </div>
+      <div className="mt-2">{lang2PronunciationDisplay}</div>
     </div>
   )
 }

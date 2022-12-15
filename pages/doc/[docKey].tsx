@@ -10,8 +10,10 @@ import { DocPreviewHeader } from "@/views/doc/DocPreviewHeader"
 import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
 import { OrderByDirection } from "@firebase/firestore"
+import { CircularProgress } from "@mui/material"
 import React from "react"
 import { map } from "rxjs"
+import ErrorPage from "next/error"
 
 const dataFunc = memoizeDataFunc((renderId: string) => {
   const param = stringParam("docKey", undefined as ForeignKey<"documentJob">)
@@ -27,7 +29,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         orderBy: {
           chunkIndex: staticValue("desc" as OrderByDirection),
         },
-        limit: staticValue(2),
+        limit: staticValue(50),
       }
     ),
     filtered(
@@ -40,12 +42,12 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         orderBy: {
           chunkIndex: staticValue("desc" as OrderByDirection),
         },
-        limit: staticValue(2),
+        limit: staticValue(50),
       }
     ),
     docForKey("documentJob", param).pipe(
       map((_) => {
-        return _.settings || {}
+        return _?.settings || {}
       })
     )
   )
@@ -74,9 +76,18 @@ export const compareSelections = (
   })
 }
 
-const DocDisplay = component(dataFunc, ({ chunks, docKey }) => {
+const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
+  if (!chunks) {
+    return <ErrorPage statusCode={404}></ErrorPage>
+  }
+
   return (
     <div className="w-full flex justify-center mt-5">
+      {isLoading && (
+        <div className="absolute h-screen w-screen flex justify-center items-center">
+          <CircularProgress size="4rem" />
+        </div>
+      )}
       <div className="md:w-2/3 md:p-0 max-w-2xl px-5 h-screen flex flex-col">
         <DocPreviewHeader docKey={docKey} />
         <div className="overflow-auto">

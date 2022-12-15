@@ -6,7 +6,7 @@ import { ParamaterizedObservable } from "@/data/ParamaterizedObservable"
 import { combine } from "@/data/paramObsBuilders/combine"
 import { RawParagraph } from "@/data/types/RawParagraph"
 import { useWorkerForParamObs } from "@/page_helpers/admin/useWorkerForParamObs"
-import { of } from "rxjs"
+import { from, of } from "rxjs"
 import { buildChunksFromEmbeddings } from "./buildChunksFromEmbeddings"
 import {
   BuildChunksWorkerInputType,
@@ -54,8 +54,7 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
     () => new Worker(new URL("./buildChunks.worker.ts", import.meta.url)),
     {},
     (values) => {
-      console.log("IN HERE")
-      return of(
+      return from(
         processChunks(
           values.lang1Paragraphs,
           values.lang2Paragraphs,

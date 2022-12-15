@@ -33,12 +33,12 @@ const getPronunciationForSentences = (
   const pronunciations = sentences
     .map((sentence) => {
       if (lang === Language.Chinese) {
-        const text = pinyin(sentence.text, {
+        const pronunciationResults = pinyin(sentence.text, {
           group: true,
           segment: true,
         })
-          .flat()
-          .join(" ")
+
+        const text = pronunciationResults.filter(Boolean).flat().join(" ")
         return { sentenceIndex: sentence.sentenceIndex, text } as Sentence
       } else {
         return null
@@ -64,7 +64,6 @@ export const addPronunciationToChunks = (chunks: Chunk[]) => {
     )
     return chunk
   })
-  console.log("with pronunc", chunksWithPronunciations)
 
   return chunksWithPronunciations
 }

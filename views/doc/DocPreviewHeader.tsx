@@ -51,26 +51,10 @@ export const DocPreviewHeader = component(
                         },
                       })
                     }}
-                    checked={settings.showPronunciation}
+                    checked={!!settings.showPronunciation}
                   />
                 }
                 label="Show Pronunciation (ja, zh)"
-              />
-              <FormControlLabel
-                control={
-                  <Switch
-                    onChange={() => {
-                      setters.documentJob(uid, {
-                        settings: {
-                          ...settings,
-                          splitWords: !settings.splitWords,
-                        },
-                      })
-                    }}
-                    checked={settings.splitWords}
-                  />
-                }
-                label="Split words (ja, zh)"
               />
             </div>
           </TabPanel>

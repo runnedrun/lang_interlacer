@@ -6,7 +6,7 @@ import {
   ParamObsWorkerOutput,
   runWorkerForParamObs,
 } from "@/page_helpers/admin/runWorkerForParamObs"
-import { of } from "rxjs"
+import { from, of } from "rxjs"
 import { Chunk } from "./ChunkDisplay"
 import { processChunks } from "./processChunks"
 
@@ -26,7 +26,9 @@ runWorkerForParamObs<BuildChunksWorkerInputType, BuildChunksWorkerOutputType>(
     extraInputs: {},
     value: { lang1Paragraphs, lang2Paragraphs, options },
   }) => {
-    const chunks = of(processChunks(lang1Paragraphs, lang2Paragraphs, options))
+    const chunks = from(
+      processChunks(lang1Paragraphs, lang2Paragraphs, options)
+    )
     return chunks
   }
 )

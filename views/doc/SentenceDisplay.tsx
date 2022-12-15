@@ -3,21 +3,21 @@ import classNames from "classnames"
 
 export const SentenceDisplay = ({
   sentence,
-  onClick,
-  isSelected,
+  onClick = () => {},
+  isSelected = false,
 }: {
   sentence: Sentence
-  onClick: () => void
-  isSelected: boolean
+  onClick?: () => void
+  isSelected?: boolean
 }) => {
   return (
-    <div
+    <span
       onClick={() => {
         onClick()
       }}
-      className={classNames("ml-2", { "font-bold": isSelected })}
+      className={classNames("ml-1", { "font-bold": isSelected })}
     >
       {sentence.text}
-    </div>
+    </span>
   )
 }
