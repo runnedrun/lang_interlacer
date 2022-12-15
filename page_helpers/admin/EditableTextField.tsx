@@ -66,6 +66,9 @@ export const EditableTextField = <
     />
   )
 
+  // to fix typing
+  const args = {} as any
+
   const component = options.popover ? (
     <div style={{ alignSelf: "flex-start" }}>
       <div
@@ -85,6 +88,7 @@ export const EditableTextField = <
           placement="bottom-start"
           components={{}}
           componentsProps={{}}
+          {...args}
         >
           <Paper elevation={1} sx={{ p: 1, minWidth: "100%" }}>
             {input}
