@@ -1,4 +1,5 @@
 import { obsToNamedParamObs } from "@/data/builders/obsToNamedParamObs"
+import { isServerside } from "@/helpers/isServerside"
 import { isUndefined } from "@/helpers/isUndefined"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
@@ -13,7 +14,7 @@ export const getQueryObs = () =>
   obsToNamedParamObs(
     cachedQueryObs.pipe(filter((_) => !isUndefined(_))),
     queryObsCacheName
-  ).cloneWithCaching()
+  ).cloneWithCaching((_) => _, isServerside())
 
 export const useQueryObsWithEffect = () => {
   const router = useRouter()

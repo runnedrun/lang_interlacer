@@ -566,16 +566,28 @@ const buildParamObsFromObs = <ArgsType, M extends any, Name extends KeyType>(
 
   paramObs.cacheBehaviorSubject = cacheSubject
 
-  paramObs.cloneWithCaching = (argTransformFn?: (args: ArgsType) => any) => {
+  paramObs.cloneWithCaching = (
+    argTransformFn?: (args: ArgsType) => any,
+    alwaysReadFromCache = false,
+    log = false
+  ) => {
     const thisBuildObs: CustomLoadingBuildObsFn<any, M, ArgsType> = (args) => {
       return buildObs(args).pipe(
-        buildCachingForDataWithLoading(args.cache, argTransformFn)
+        buildCachingForDataWithLoading(
+          args.cache,
+          argTransformFn,
+          alwaysReadFromCache
+        )
       )
     }
 
     return buildParamObsFromObs(
       obsWithLoading.pipe(
-        buildCachingForDataWithLoading(cache, argTransformFn)
+        buildCachingForDataWithLoading(
+          cache,
+          argTransformFn,
+          alwaysReadFromCache
+        )
       ),
       getLastPipedResult().args as ArgsType,
       thisBuildObs,

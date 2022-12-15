@@ -252,7 +252,8 @@ export type ParamaterizedObservable<
   ) => ParamaterizedObservable<ParamType, T, Name>
   clone: () => ParamaterizedObservable<ParamType, T, Name>
   cloneWithCaching: (
-    argTransformFn?: (args: ParamType) => any
+    argTransformFn?: (args: ParamType) => any,
+    alwaysReadFromCache?: boolean
   ) => ParamaterizedObservable<ParamType, T, Name>
   cacheBehaviorSubject: BehaviorSubject<Record<string, any>>
   isLoadingForArgsObs: Observable<DataWithLoading<T, ParamType>>

@@ -23,7 +23,8 @@ export const buildCachingForDataWithLoading = <
   DataWithLoadingType extends DataWithLoading<any, ArgsType>
 >(
   cache: Cache<ArgsType>,
-  argTransformFn?: (args: Partial<ArgsType>) => any
+  argTransformFn?: (args: Partial<ArgsType>) => any,
+  alwaysReadFromCache = false
 ) => (
   inputObs: Observable<DataWithLoadingType>
 ): Observable<DataWithLoadingType> => {
@@ -32,7 +33,8 @@ export const buildCachingForDataWithLoading = <
       const clonedDataWithLoading = clone(dataWithLoading)
       const args = dataWithLoading.args
       const tranformedArgs = argTransformFn ? argTransformFn(args) : args
-      if (dataWithLoading.isLoading) {
+
+      if (dataWithLoading.isLoading || alwaysReadFromCache) {
         const cachedData = cache.get(tranformedArgs)
         if (!isUndefined(cachedData)) {
           Object.assign(clonedDataWithLoading, {
@@ -42,7 +44,7 @@ export const buildCachingForDataWithLoading = <
         }
       }
 
-      if (!dataWithLoading.isLoading) {
+      if (!dataWithLoading.isLoading && !alwaysReadFromCache) {
         cache.set(tranformedArgs, dataWithLoading.finalValue)
       }
 

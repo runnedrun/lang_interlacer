@@ -29,7 +29,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         orderBy: {
           chunkIndex: staticValue("desc" as OrderByDirection),
         },
-        limit: staticValue(50),
+        limit: staticValue(10),
       }
     ),
     filtered(
@@ -42,7 +42,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         orderBy: {
           chunkIndex: staticValue("desc" as OrderByDirection),
         },
-        limit: staticValue(50),
+        limit: staticValue(10),
       }
     ),
     docForKey("documentJob", param).pipe(
@@ -98,6 +98,6 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
   )
 })
 
-// export const getServerSideProps = buildPrefetchHandler(dataFunc)
+export const getServerSideProps = buildPrefetchHandler(dataFunc)
 
 export default DocDisplay

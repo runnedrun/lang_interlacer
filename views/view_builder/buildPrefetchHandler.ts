@@ -60,7 +60,6 @@ export const ServerValueGetters: ServerValueGetters = {
 export function buildPrefetchHandler<MapToResolve extends Record<any, any>>(
   mapToResolveFn: (renderId: string) => MapToResolve
 ): PrefetchFnType<MapToResolve> {
-  console.log("BEFORE WARMUP")
   return async (context) => {
     if (await possiblyHandleWarmupRequest(context.query)) {
       return {
