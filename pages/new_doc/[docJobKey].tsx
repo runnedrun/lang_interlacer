@@ -148,7 +148,7 @@ const NewDocView = component(
 
     return (
       <div className="w-full flex justify-center">
-        <div className="w-2/3 justify-center max-w-3xl">
+        <div className="md:w-2/3 md:p-0 px-2 justify-center max-w-3xl">
           <div className="text-5xl mt-5 text-center">Language Interlacer</div>
           <div className="gap-5 flex flex-col w-full p-5">
             <div className="flex flex-col items-center mb-5">
@@ -201,6 +201,9 @@ const NewDocView = component(
             </div>
 
             <div className="w-full mb-10">
+              <FormHelperText id="lang1-helper-text" className="mb-2">
+                {`Paste in up to 10,000 characters of text in any language`}
+              </FormHelperText>
               <FormControl
                 className="w-full"
                 disabled={jobStarted}
@@ -213,9 +216,6 @@ const NewDocView = component(
                     "lang1Text"
                   )}
                 </InputLabel>
-                <FormHelperText id="lang1-helper-text">
-                  {`Paste in up to 10,000 characters of text in any language`}
-                </FormHelperText>
                 <Input
                   id="lang1-input"
                   aria-describedby="lang1-helper-text"
@@ -228,6 +228,9 @@ const NewDocView = component(
             </div>
             {!currentData.generateTranslation && (
               <div className="w-full">
+                <FormHelperText id="lang2-helper-text" className="mb-2">
+                  {`Paste the translation of the text above in any other language`}
+                </FormHelperText>
                 <FormControl
                   className="w-full"
                   disabled={jobStarted}
@@ -240,9 +243,6 @@ const NewDocView = component(
                       "lang2Text"
                     )}
                   </InputLabel>
-                  <FormHelperText id="lang2-helper-text">
-                    {`Paste the translation of the text above in any other language`}
-                  </FormHelperText>
                   <Input
                     id="lang2-input"
                     aria-describedby="lang2-helper-text"
