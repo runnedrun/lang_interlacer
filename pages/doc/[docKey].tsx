@@ -98,6 +98,6 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
   )
 })
 
-export const getServerSideProps = buildPrefetchHandler(dataFunc)
+// export const getServerSideProps = buildPrefetchHandler(dataFunc)
 
 export default DocDisplay
