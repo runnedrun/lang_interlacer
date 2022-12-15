@@ -14,10 +14,8 @@ import React from "react"
 import { map } from "rxjs"
 
 const dataFunc = memoizeDataFunc((renderId: string) => {
-  const param = stringParam(
-    "docKey",
-    undefined as ForeignKey<"documentJob">
-  ).log("paramssss")
+  const param = stringParam("docKey", undefined as ForeignKey<"documentJob">)
+
   const chunksObs = buildCachedParamObsForChunks(
     filtered(
       "rawParagraph",
@@ -45,14 +43,11 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         limit: staticValue(2),
       }
     ),
-    staticValue({ showPronunciation: true })
-    // docForKey("documentJob", param)
-    //   .pipe(
-    //     map((_) => {
-    //       return _.settings
-    //     })
-    //   )
-    //   .log("docsss")
+    docForKey("documentJob", param).pipe(
+      map((_) => {
+        return _.settings || {}
+      })
+    )
   )
 
   return {
