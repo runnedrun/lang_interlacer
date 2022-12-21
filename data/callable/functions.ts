@@ -1,4 +1,5 @@
 import { AddPronunciationToChunksInput } from "@/functions/src/callable/addPronunciationToChunksCallable"
+import { GetLanguageForSentencesInput } from "@/functions/src/callable/getLanguageForSentencesCallable"
 import { isDemoMode } from "@/helpers/isDemoMode"
 import {
   connectFunctionsEmulator,
@@ -19,6 +20,10 @@ const buildCallableFunction = <ArgType>(funcName) => {
 
 export const addPronunciationToChunksCallable = buildCallableFunction<AddPronunciationToChunksInput>(
   "addPronunciationToChunksCallable"
+)
+
+export const getLanguageForSentencesCallable = buildCallableFunction<GetLanguageForSentencesInput>(
+  "getLanguageForSentencesCallable"
 )
 
 // export const sendMetricsReportTestEmail = buildCallableFunction<SendMetricsReportTestEmailArgs>(
