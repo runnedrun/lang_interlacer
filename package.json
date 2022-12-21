@@ -75,6 +75,7 @@
     "html-to-image": "^1.10.8",
     "isemail": "^3.2.0",
     "json-stable-stringify": "^1.0.1",
+    "kuroshiro": "^1.2.0",
     "libphonenumber-js": "^1.9.35",
     "lodash": "^4.17.21",
     "mathjs": "^11.5.0",
