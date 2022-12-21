@@ -1,12 +1,33 @@
 import { Language, Sentence } from "@/data/types/RawParagraph"
+import { objKeys } from "@/helpers/objKeys"
 import { Chunk } from "@/views/doc/ChunkDisplay"
-import { getLanguageForSentencesCallable } from "@/data/callable/functions"
-import { getLanguageForSentences } from "@/functions/src/helpers/getLanguageForSentences"
-import { isServerside } from "@/helpers/isServerside"
 import pinyin from "pinyin" // Chinese pronunciation
 // import Kuroshiro from "kuroshiro" // Japanese pronunciation
 // import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
 // const kuroshiro = new Kuroshiro()
+
+const isChinese = (text: string) => {
+  const re = /[\u4e00-\u9fa5]/
+  return re.test(text)
+}
+
+const isJapanese = (text: string) => {
+  const re = /[\u3040-\u309f]/
+  return re.test(text)
+}
+
+const languageCheckers = {
+  [Language.Japanese]: isJapanese,
+  [Language.Chinese]: isChinese,
+}
+
+const getLanguageForSentences = (sentences: Sentence[]) => {
+  const firstSentence = sentences[0]
+  return objKeys(languageCheckers).find((lang) => {
+    const checker = languageCheckers[lang]
+    return checker(firstSentence.text)
+  })
+}
 
 const getPronunciationForSentences = (
   lang: Language,
@@ -41,21 +62,8 @@ const getPronunciationForSentences = (
 }
 
 export const addPronunciationToChunks = (chunks: Chunk[]) => {
-  const getLanguageFunction1 = isServerside()
-    ? () => Promise.resolve(getLanguageForSentences(chunks[0].lang1))
-    : () =>
-        getLanguageForSentencesCallable({ sentences: chunks[0].lang1 }).then(
-          (_) => _.data as Chunk[]
-        )
-  const getLanguageFunction2 = isServerside()
-    ? () => Promise.resolve(getLanguageForSentences(chunks[0].lang2))
-    : () =>
-        getLanguageForSentencesCallable({ sentences: chunks[0].lang2 }).then(
-          (_) => _.data as Chunk[]
-        )
-
-  const lang1Language = getLanguageFunction1()
-  const lang2Language = getLanguageFunction2()
+  const lang1Language = getLanguageForSentences(chunks[0].lang1)
+  const lang2Language = getLanguageForSentences(chunks[0].lang2)
 
   if (lang1Language === Language.Japanese) {
     // await kuroshiro.init(new KuromojiAnalyzer())
