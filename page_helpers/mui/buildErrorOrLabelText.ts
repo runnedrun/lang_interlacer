@@ -1,13 +1,8 @@
 import { KeyError } from "@/data/firebaseObsBuilders/fbWriter"
-import { InputLabel } from "@mui/material"
-import React from "react"
 
-export const buildErrorOrLabelText = <
-  ErrorsType extends Record<string, KeyError>
->(
+export const buildErrorOrLabelText = (
   mainLabelText: string,
-  errors: ErrorsType,
-  thisKey: keyof ErrorsType
+  error: KeyError
 ) => {
-  return errors[thisKey] ? errors[thisKey].message : mainLabelText
+  return error ? error.message : mainLabelText
 }

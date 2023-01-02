@@ -9,22 +9,11 @@
   width: 2rem;
 }
 
-@font-face {
-  font-family: "Buffalo";
-  src: url("/fonts/Buffalo.otf") format("opentype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Bebas Neue";
-  src: url("/fonts/Bebas_Neue/BebasNeue-Regular.ttf");
-  font-weight: normal;
-  font-style: normal;
-}
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 html,
 body,
 #__next {
   height: 100%;
+  font-family: "Roboto", sans-serif;
 }

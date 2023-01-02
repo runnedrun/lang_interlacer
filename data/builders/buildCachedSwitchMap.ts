@@ -8,6 +8,8 @@ import {
   merge,
   Observable,
   of,
+  pairwise,
+  startWith,
   switchMap,
   tap,
 } from "rxjs"
@@ -29,12 +31,18 @@ export const buildCachingForDataWithLoading = <
   inputObs: Observable<DataWithLoadingType>
 ): Observable<DataWithLoadingType> => {
   return inputObs.pipe(
-    map((dataWithLoading) => {
+    startWith({} as DataWithLoadingType),
+    pairwise(),
+    map(([oldDataWithLoading, dataWithLoading]) => {
       const clonedDataWithLoading = clone(dataWithLoading)
       const args = dataWithLoading.args
       const tranformedArgs = argTransformFn ? argTransformFn(args) : args
 
-      if (dataWithLoading.isLoading || alwaysReadFromCache) {
+      const loadingAndArgsHaveChanged =
+        dataWithLoading.isLoading &&
+        !isEqual(oldDataWithLoading.args, dataWithLoading.args)
+
+      if (loadingAndArgsHaveChanged || alwaysReadFromCache) {
         const cachedData = cache.get(tranformedArgs)
         if (!isUndefined(cachedData)) {
           Object.assign(clonedDataWithLoading, {
@@ -44,7 +52,7 @@ export const buildCachingForDataWithLoading = <
         }
       }
 
-      if (!dataWithLoading.isLoading && !alwaysReadFromCache) {
+      if (!loadingAndArgsHaveChanged && !alwaysReadFromCache) {
         cache.set(tranformedArgs, dataWithLoading.finalValue)
       }
 

@@ -6,6 +6,8 @@ import {
 import { getApp as fbGetApp } from "firebase/app"
 import { initializeApp } from "firebase/app"
 import { connectStorageEmulator, getStorage } from "@firebase/storage"
+import { connectAuthEmulator } from "@firebase/auth"
+import { getAuth } from "firebase/auth"
 
 const getApp = (name?: string) => {
   let app = null
@@ -59,7 +61,8 @@ export const init = () => {
   })
 
   const storage = getStorage()
-  demoMode && connectFirestoreEmulator(db, "localhost", 8070)
+  demoMode && connectFirestoreEmulator(db, "localhost", 8071)
   demoMode && connectStorageEmulator(storage, "localhost", 9199)
+  demoMode && connectAuthEmulator(getAuth(), "http://localhost:9089")
   return db
 }

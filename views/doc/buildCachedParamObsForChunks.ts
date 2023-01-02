@@ -14,6 +14,7 @@ import {
 } from "./buildChunks.worker"
 import { DocumentJobSettings } from "@/data/types/DocumentJob"
 import { processChunks } from "./processChunks"
+import { logObs } from "@/helpers/logObs"
 
 export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
   lang1ParagraphsObs: ParamaterizedObservable<
@@ -34,7 +35,8 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
       lang2Paragraphs: lang2ParagraphsObs,
       options: settingsObs,
     },
-    "chunks"
+    "chunks",
+    true
   )
 
   return useWorkerForParamObs<

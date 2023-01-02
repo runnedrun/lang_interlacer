@@ -25,7 +25,6 @@ module.exports = {
   plugins: [require("@tailwindcss/forms")],
   theme: {
     fontFamily: {
-      cursive: ["Buffalo"],
       sans: ["Bebas Neue"],
     },
     extend: {
@@ -34,9 +33,9 @@ module.exports = {
       },
       colors: {
         current: colors.blue,
-        primary: colors.teal,
+        primary: colors.cyan,
         error: colors.rose,
-        secondary: colors.green,
+        secondary: colors.amber,
         defaultOutline: "rgba(0, 0, 0, 0.23)",
       },
     },

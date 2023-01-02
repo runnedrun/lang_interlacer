@@ -25,11 +25,11 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: colors.red[300],
+      main: colors.cyan[400],
       contrastText: colors.white,
     },
     secondary: {
-      main: colors.orange[300],
+      main: colors.amber[400],
       contrastText: colors.white,
     },
     info: {

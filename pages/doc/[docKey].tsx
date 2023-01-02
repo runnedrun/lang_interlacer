@@ -14,6 +14,7 @@ import { CircularProgress } from "@mui/material"
 import React from "react"
 import { map } from "rxjs"
 import ErrorPage from "next/error"
+import { logObs } from "@/helpers/logObs"
 
 const dataFunc = memoizeDataFunc((renderId: string) => {
   const param = stringParam("docKey", undefined as ForeignKey<"documentJob">)

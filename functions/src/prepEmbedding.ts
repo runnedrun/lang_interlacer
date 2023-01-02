@@ -7,6 +7,7 @@ import fetch from "node-fetch"
 import wink from "wink-nlp"
 import winkModel from "wink-eng-lite-web-model"
 import { chunk } from "lodash"
+import { generateRawParagraphKey } from "./helpers/generateRawParagraphKey"
 
 const nlp = wink(winkModel)
 
@@ -96,12 +97,16 @@ export const saveEmbeddingsAndParagraphs = async (
           sentenceIndex,
         }
       })
-      return fbSet("rawParagraph", `${docKey}-${languageId}-${chunkIndex}`, {
-        sentences: sentencesWithEmebeddings,
-        docKey,
-        language: languageId,
-        chunkIndex,
-      })
+      return fbSet(
+        "rawParagraph",
+        generateRawParagraphKey(docKey, languageId, chunkIndex),
+        {
+          sentences: sentencesWithEmebeddings,
+          docKey,
+          language: languageId,
+          chunkIndex,
+        }
+      )
     })
   )
 }

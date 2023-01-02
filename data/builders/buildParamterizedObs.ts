@@ -1,6 +1,7 @@
 import { ArgsMap } from "@/data/builders/ArgsMap"
 import { deepMapObj } from "@/helpers/deepMapObj"
 import { filterUndefFromObj, objHasUndef } from "@/helpers/filterUndef"
+import { logObs } from "@/helpers/logObs"
 import { objKeys } from "@/helpers/objKeys"
 import { tapWithIndex } from "@/helpers/tapWithIndex"
 import {
@@ -176,7 +177,9 @@ export const applyAllArgFilters = <M, ArgsType extends ArgsMap>(
   )
 }
 
-const argFilterForLoadingObs = (obs: Observable<DataWithLoading<any, any>>) =>
+const argFilterForLoadingObs = (log = false) => (
+  obs: Observable<DataWithLoading<any, any>>
+) =>
   obs.pipe(
     startWith(undefined as DataWithLoading<any, any>),
     pairwise(),
@@ -232,7 +235,7 @@ export const buildArgsForObsBuilder = <M, ArgsType extends ArgsMap>(
   )
 
   const argsFilteredObs = rawDataWithLoadingObs.pipe(
-    argFilterForLoadingObs,
+    argFilterForLoadingObs(log),
     shareReplay({ bufferSize: 1, refCount: true })
   )
 

@@ -208,11 +208,7 @@ const NewDocView = component(
                 error={!!errors.byKey.lang1Text}
               >
                 <InputLabel htmlFor="lang1-input">
-                  {buildErrorOrLabelText(
-                    "Language 1",
-                    errors.byKey,
-                    "lang1Text"
-                  )}
+                  {buildErrorOrLabelText("Language 1", errors.byKey.lang1Text)}
                 </InputLabel>
                 <Input
                   id="lang1-input"
@@ -237,8 +233,7 @@ const NewDocView = component(
                   <InputLabel htmlFor="lang2-input">
                     {buildErrorOrLabelText(
                       "Language 2",
-                      errors.byKey,
-                      "lang2Text"
+                      errors.byKey["lang2Text"]
                     )}
                   </InputLabel>
                   <Input
