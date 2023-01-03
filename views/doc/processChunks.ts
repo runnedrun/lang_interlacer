@@ -20,16 +20,13 @@ export const processChunks = (
     lang1Paragraphs,
     lang2Paragraphs
   )
-  console.log("RUNNING!")
 
   const addPronunciationFunction = isServerside()
-    ? () => Promise.resolve(addPronunciationToChunks(initialChunks))
+    ? () => addPronunciationToChunks(initialChunks)
     : () =>
         addPronunciationToChunksCallable({ chunks: initialChunks }).then(
           (_) => _.data as Chunk[]
         )
-
-  console.log("STILL RUNNING!")
 
   const withPronunciations = options.showPronunciation
     ? addPronunciationFunction()

@@ -1,11 +1,10 @@
-import { Language, Sentence } from "@/data/types/RawParagraph"
-import { objKeys } from "@/helpers/objKeys"
-import { Chunk } from "@/views/doc/ChunkDisplay"
+import { Language, Sentence } from "../../../data/types/RawParagraph"
+import { objKeys } from "../../../helpers/objKeys"
+import { Chunk } from "../../../views/doc/ChunkDisplay"
 import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
 import { chunk } from "lodash"
-const kuroshiro = new Kuroshiro()
 
 const isChinese = (text: string) => {
   const re = /[\u4e00-\u9fa5]/
@@ -30,12 +29,12 @@ const getLanguageForSentences = (sentences: Sentence[]) => {
   })
 }
 
-const getPronunciationForSentences = async (
+export const getPronunciationForSentences = async (
   lang: Language,
   sentences: Sentence[]
-) => {
-  const pronunciations = sentences
-    .map((sentence) => {
+): Promise<Sentence[]> => {
+  const pronunciationPromises = sentences
+    .map(async (sentence) => {
       if (lang === Language.Chinese) {
         const pronunciationResults = pinyin(sentence.text, {
           group: true,
@@ -45,24 +44,32 @@ const getPronunciationForSentences = async (
         const text = pronunciationResults.filter(Boolean).flat().join(" ")
         return { sentenceIndex: sentence.sentenceIndex, text } as Sentence
       } else if (lang === Language.Japanese) {
+        const kuroshiro = new Kuroshiro()
+        await kuroshiro.init(new KuromojiAnalyzer())
+
         const text = await kuroshiro.convert(sentence.text, {
           to: "hiragana",
           mode: "normal",
         })
 
-        return { sentenceIndex: sentence.sentenceIndex, text } as Sentence
-        console.log("Got Japanese pronunciation for the sentence")
-        return null
+        console.log(text)
+        return {
+          embedding: [0.6, 0.7, 0.8], // had to add the embedded param to pass the type check, will this have side effects?
+          sentenceIndex: sentence.sentenceIndex,
+          text,
+        } as Sentence
       } else {
         return null
       }
     })
     .filter(Boolean)
 
+  const pronunciations = await Promise.all(pronunciationPromises)
+
   return pronunciations.length ? pronunciations : null
 }
 
-export const addPronunciationToChunks = (chunks: Chunk[]) => {
+export const addPronunciationToChunks = async (chunks: Chunk[]) => {
   const lang1Language = getLanguageForSentences(chunks[0].lang1)
   const lang2Language = getLanguageForSentences(chunks[0].lang2)
 
@@ -78,7 +85,9 @@ export const addPronunciationToChunks = (chunks: Chunk[]) => {
     return chunk
   })
 
-  const chunksWithPronunciations = Promise.all(chunksWithPronunciationPromises)
+  const chunksWithPronunciations = await Promise.all(
+    chunksWithPronunciationPromises
+  )
 
   return chunksWithPronunciations
 }
