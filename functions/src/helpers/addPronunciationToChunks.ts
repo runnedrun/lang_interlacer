@@ -49,7 +49,15 @@ const getPronunciationForSentences = (
   return pronunciations.length ? pronunciations : null
 }
 
-export const addPronunciationToChunks = (chunks: Chunk[]) => {
+export type AddPronunciationToChunksInput = {
+  chunks: Chunk[]
+}
+
+export type AddPronunciationToChunksOutput = Chunk[]
+
+export const addPronunciationToChunks = ({
+  chunks,
+}: AddPronunciationToChunksInput): Promise<AddPronunciationToChunksOutput> => {
   const lang1Language = getLanguageForSentences(chunks[0].lang1)
   const lang2Language = getLanguageForSentences(chunks[0].lang2)
 
@@ -65,5 +73,5 @@ export const addPronunciationToChunks = (chunks: Chunk[]) => {
     return chunk
   })
 
-  return chunksWithPronunciations
+  return Promise.resolve(chunksWithPronunciations)
 }

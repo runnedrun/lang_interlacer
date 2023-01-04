@@ -79,8 +79,8 @@ export const attachObs = <
 
   const valueObsArray = Object.values(attachMap).filter(Boolean)
 
-  const obsWithLoadingArrayForAllAttachedParams = valueObsArray.map(
-    (_) => _.isLoadingForArgsObs
+  const obsWithLoadingArrayForAllAttachedParams = valueObsArray.map((_) =>
+    _.isLoadingForArgsObs.pipe(shareReplay({ refCount: true, bufferSize: 1 }))
   )
 
   const obsWithLoadingForAttachedParams = valueObsArray.length

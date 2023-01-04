@@ -14,21 +14,14 @@ export type BuildChunksWorkerInputType = ParamObsWorkerInput<
   {
     lang1Paragraphs: RawParagraph[]
     lang2Paragraphs: RawParagraph[]
-    options: DocumentJobSettings
   },
   {}
 >
 export type BuildChunksWorkerOutputType = ParamObsWorkerOutput<Chunk[]>
 
 runWorkerForParamObs<BuildChunksWorkerInputType, BuildChunksWorkerOutputType>(
-  ({
-    cache,
-    extraInputs: {},
-    value: { lang1Paragraphs, lang2Paragraphs, options },
-  }) => {
-    const chunks = from(
-      processChunks(lang1Paragraphs, lang2Paragraphs, options)
-    )
+  ({ cache, extraInputs: {}, value: { lang1Paragraphs, lang2Paragraphs } }) => {
+    const chunks = of(processChunks(lang1Paragraphs, lang2Paragraphs))
     return chunks
   }
 )
