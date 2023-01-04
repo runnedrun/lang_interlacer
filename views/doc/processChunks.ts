@@ -9,11 +9,10 @@ import { Chunk } from "./ChunkDisplay"
 
 export const processChunks = (
   lang1Paragraphs: RawParagraph[],
-  lang2Paragraphs: RawParagraph[],
-  options: DocumentJobSettings
+  lang2Paragraphs: RawParagraph[]
 ) => {
   if (!lang1Paragraphs.length || !lang2Paragraphs.length) {
-    return of(null)
+    return null
   }
 
   const initialChunks = buildChunksFromEmbeddings(
@@ -21,16 +20,5 @@ export const processChunks = (
     lang2Paragraphs
   )
 
-  const addPronunciationFunction = isServerside()
-    ? () => Promise.resolve(addPronunciationToChunks(initialChunks))
-    : () =>
-        addPronunciationToChunksCallable({ chunks: initialChunks }).then(
-          (_) => _.data as Chunk[]
-        )
-
-  const withPronunciations = options.showPronunciation
-    ? addPronunciationFunction()
-    : Promise.resolve(initialChunks)
-
-  return withPronunciations
+  return initialChunks
 }
