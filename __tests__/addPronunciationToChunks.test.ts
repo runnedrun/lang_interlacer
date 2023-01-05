@@ -18,16 +18,21 @@ const sentences: Sentence[] = [
 // Get pronunciation of sentences from kuroshiro online demo
 // https://kuroshiro.org/#demo
 const results: Sentence[] = [
+  // @ts-ignore
   {
-    embedding: [0.6, 0.7, 0.8],
+    // does not return embedding data
+    // embedding: [0.6, 0.7, 0.8],
     sentenceIndex: 0,
     text:
-      "しがつのあるはれたあさ、はらじゅくのうらどおりでぼくは100パーセントのおんなのことすれちがう。",
+      "<ruby>四月<rp>(</rp><rt>しがつ</rt><rp>)</rp></ruby>のある<ruby>晴<rp>(</rp><rt>は</rt><rp>)</rp></ruby>れた<ruby>朝<rp>(</rp><rt>あさ</rt><rp>)</rp></ruby>、<ruby>原宿<rp>(</rp><rt>はらじゅく</rt><rp>)</rp></ruby>の<ruby>裏通<rp>(</rp><rt>うらどお</rt><rp>)</rp></ruby>りで<ruby>僕<rp>(</rp><rt>ぼく</rt><rp>)</rp></ruby>は100パーセントの<ruby>女<rp>(</rp><rt>おんな</rt><rp>)</rp></ruby>の<ruby>子<rp>(</rp><rt>こ</rt><rp>)</rp></ruby>とすれ<ruby>違<rp>(</rp><rt>ちが</rt><rp>)</rp></ruby>う。",
   },
+  // @ts-ignore
   {
-    embedding: [0.6, 0.7, 0.8],
+    // does not return embedding data
+    // embedding: [0.6, 0.7, 0.8],
     sentenceIndex: 1,
-    text: "たいしてきれいなおんなのこではない。",
+    text:
+      "たいして<ruby>綺麗<rp>(</rp><rt>きれい</rt><rp>)</rp></ruby>な<ruby>女<rp>(</rp><rt>おんな</rt><rp>)</rp></ruby>の<ruby>子<rp>(</rp><rt>こ</rt><rp>)</rp></ruby>ではない。",
   },
 ]
 
