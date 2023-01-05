@@ -32,8 +32,12 @@ export const getPronunciationForSentences = async (
   lang: Language,
   sentences: Sentence[]
 ): Promise<Sentence[]> => {
-  const kuroshiro = new Kuroshiro()
-  await kuroshiro.init(new KuromojiAnalyzer())
+  // Initialization for Japanese pronunciation
+  let kuroshiro: Kuroshiro
+  if (lang === Language.Japanese) {
+    kuroshiro = new Kuroshiro()
+    await kuroshiro.init(new KuromojiAnalyzer())
+  }
 
   const pronunciationPromises = sentences
     .map(async (sentence) => {
