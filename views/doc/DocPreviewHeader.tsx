@@ -20,28 +20,32 @@ import { setters } from "@/data/fb"
 export const DocPreviewHeader = component(
   () => {
     const docJob = docForKey("documentJob", prop("docKey"))
-    const language = prop("language")
+    const languages = prop("languages")
     return {
       docJob,
-      language,
+      languages,
       selectedTab: settable("selectedTab", "1"),
     }
   },
   ({
     docJob: { settings = {}, uid },
-    language,
+    languages,
     selectedTab,
     setSelectedTab,
+  }: {
+    docJob: DocumentJob
+    languages: any | Language[] // this should be fixed!
+    selectedTab: string
+    setSelectedTab: any
   }) => {
-    console.log("settings", settings)
     const onChange = (_, newValue) => {
       setSelectedTab(newValue)
     }
 
     let pronunciationSwitchText: string = "Show pronunciation"
-    if (language === Language.Chinese) {
+    if (languages.includes(Language.Chinese)) {
       pronunciationSwitchText += " (ja, zh)"
-    } else if (language === Language.Japanese) {
+    } else if (languages.includes(Language.Japanese)) {
       pronunciationSwitchText += " (furigana)"
     }
 
