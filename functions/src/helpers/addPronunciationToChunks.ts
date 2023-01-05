@@ -1,6 +1,6 @@
-import { Language, Sentence } from "../../../data/types/RawParagraph"
-import { objKeys } from "../../../helpers/objKeys"
-import { Chunk } from "../../../views/doc/ChunkDisplay"
+import { Language, Sentence } from "@/data/types/RawParagraph"
+import { objKeys } from "@/helpers/objKeys"
+import { Chunk } from "@/views/doc/ChunkDisplay"
 import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
