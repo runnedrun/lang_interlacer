@@ -69,7 +69,15 @@ export const getPronunciationForSentences = async (
   return pronunciations.length ? pronunciations : null
 }
 
-export const addPronunciationToChunks = async (chunks: Chunk[]) => {
+export type AddPronunciationToChunksInput = {
+  chunks: Chunk[]
+}
+
+export type AddPronunciationToChunksOutput = Chunk[]
+
+export const addPronunciationToChunks = ({
+  chunks,
+}: AddPronunciationToChunksInput): Promise<AddPronunciationToChunksOutput> => {
   const lang1Language = getLanguageForSentences(chunks[0].lang1)
   const lang2Language = getLanguageForSentences(chunks[0].lang2)
 
@@ -85,9 +93,7 @@ export const addPronunciationToChunks = async (chunks: Chunk[]) => {
     return chunk
   })
 
-  const chunksWithPronunciations = await Promise.all(
-    chunksWithPronunciationPromises
-  )
+  const chunksWithPronunciations = Promise.all(chunksWithPronunciationPromises)
 
   return chunksWithPronunciations
 }
