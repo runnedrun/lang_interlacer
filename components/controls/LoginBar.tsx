@@ -1,14 +1,14 @@
 import { Button } from "@mui/material"
 import Link from "next/link"
+import { useAuthUser } from "next-firebase-auth"
 
-export default function LoginBar({
-  loggedIn,
-}: {
-  readonly loggedIn?: boolean
-}): JSX.Element {
-  return loggedIn ? (
+export default function LoginBar(): JSX.Element {
+  const AuthUser = useAuthUser()
+  return AuthUser.id ? (
     <div className="w-full text-right my-2">
-      <Button className="mx-2">Log Out</Button>
+      <Link href="/api/logout" passHref>
+        <Button className="mx-2">Log Out</Button>
+      </Link>
     </div>
   ) : (
     <div className="w-full text-right my-2">
