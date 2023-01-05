@@ -1,6 +1,6 @@
-import { Language, Sentence } from "../../../data/types/RawParagraph"
-import { objKeys } from "../../../helpers/objKeys"
-import { Chunk } from "../../../views/doc/ChunkDisplay"
+import { Language, Sentence } from "@/data/types/RawParagraph"
+import { objKeys } from "@/helpers/objKeys"
+import { Chunk } from "@/views/doc/ChunkDisplay"
 import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
@@ -32,8 +32,12 @@ export const getPronunciationForSentences = async (
   lang: Language,
   sentences: Sentence[]
 ): Promise<Sentence[]> => {
-  const kuroshiro = new Kuroshiro()
-  await kuroshiro.init(new KuromojiAnalyzer())
+  // Initialization for Japanese pronunciation
+  let kuroshiro: Kuroshiro
+  if (lang === Language.Japanese) {
+    kuroshiro = new Kuroshiro()
+    await kuroshiro.init(new KuromojiAnalyzer())
+  }
 
   const pronunciationPromises = sentences
     .map(async (sentence) => {
