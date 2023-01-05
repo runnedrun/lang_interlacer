@@ -12,10 +12,8 @@ export default function LoginBar({
     </div>
   ) : (
     <div className="w-full text-right my-2">
-      <Button component={Link} className="mx-2">
-        Sign In
-      </Button>
-      <Button component={Link} className="mx-2" variant="contained">
+      <Button className="mx-2">Sign In</Button>
+      <Button className="mx-2" variant="contained">
         Sign Up
       </Button>
     </div>
