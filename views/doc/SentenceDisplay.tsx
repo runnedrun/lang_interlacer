@@ -17,9 +17,8 @@ export const SentenceDisplay = ({
           onClick()
         }}
         className={classNames("ml-1", { "font-bold": isSelected })}
-      >
-        {sentence.text}
-      </span>
+        dangerouslySetInnerHTML={{ __html: sentence.text }}
+      />
     )
   )
 }

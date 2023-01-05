@@ -4,7 +4,6 @@ import { Chunk } from "../../../views/doc/ChunkDisplay"
 import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
-import { chunk } from "lodash"
 
 const isChinese = (text: string) => {
   const re = /[\u4e00-\u9fa5]/
@@ -33,6 +32,9 @@ export const getPronunciationForSentences = async (
   lang: Language,
   sentences: Sentence[]
 ): Promise<Sentence[]> => {
+  const kuroshiro = new Kuroshiro()
+  await kuroshiro.init(new KuromojiAnalyzer())
+
   const pronunciationPromises = sentences
     .map(async (sentence) => {
       if (lang === Language.Chinese) {
@@ -44,17 +46,12 @@ export const getPronunciationForSentences = async (
         const text = pronunciationResults.filter(Boolean).flat().join(" ")
         return { sentenceIndex: sentence.sentenceIndex, text } as Sentence
       } else if (lang === Language.Japanese) {
-        const kuroshiro = new Kuroshiro()
-        await kuroshiro.init(new KuromojiAnalyzer())
-
         const text = await kuroshiro.convert(sentence.text, {
           to: "hiragana",
-          mode: "normal",
+          mode: "furigana",
         })
 
-        console.log(text)
         return {
-          embedding: [0.6, 0.7, 0.8], // had to add the embedded param to pass the type check, will this have side effects?
           sentenceIndex: sentence.sentenceIndex,
           text,
         } as Sentence
