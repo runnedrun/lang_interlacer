@@ -11,6 +11,7 @@ import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
 import { OrderByDirection } from "@firebase/firestore"
 import { CircularProgress } from "@mui/material"
+import { Language } from "@/data/types/RawParagraph"
 import React from "react"
 import { map } from "rxjs"
 import ErrorPage from "next/error"
@@ -90,7 +91,7 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
         </div>
       )}
       <div className="md:w-2/3 md:p-0 max-w-2xl px-5 h-screen flex flex-col">
-        <DocPreviewHeader docKey={docKey} />
+        <DocPreviewHeader docKey={docKey} language={Language.Japanese} />
         <div className="overflow-auto">
           <ChunksDisplay chunks={chunks} />
         </div>

@@ -5,6 +5,7 @@ import { stringParam } from "@/data/paramObsBuilders/stringParam"
 import { map } from "rxjs"
 import { component } from "../view_builder/component"
 import TabContext from "@mui/lab/TabContext"
+import { Language } from "@/data/types/RawParagraph"
 
 import * as React from "react"
 import Tab from "@mui/material/Tab"
@@ -19,16 +20,31 @@ import { setters } from "@/data/fb"
 export const DocPreviewHeader = component(
   () => {
     const docJob = docForKey("documentJob", prop("docKey"))
+    const language = prop("language")
     return {
       docJob,
+      language,
       selectedTab: settable("selectedTab", "1"),
     }
   },
-  ({ docJob: { settings = {}, uid }, selectedTab, setSelectedTab }) => {
+  ({
+    docJob: { settings = {}, uid },
+    language,
+    selectedTab,
+    setSelectedTab,
+  }) => {
     console.log("settings", settings)
     const onChange = (_, newValue) => {
       setSelectedTab(newValue)
     }
+
+    let pronunciationSwitchText: string = "Show pronunciation"
+    if (language === Language.Chinese) {
+      pronunciationSwitchText += " (ja, zh)"
+    } else if (language === Language.Japanese) {
+      pronunciationSwitchText += " (furigana)"
+    }
+
     return (
       <div className="w-full">
         <TabContext value={selectedTab}>
@@ -54,7 +70,7 @@ export const DocPreviewHeader = component(
                     checked={!!settings.showPronunciation}
                   />
                 }
-                label="Show Pronunciation (ja, zh)"
+                label={pronunciationSwitchText}
               />
             </div>
           </TabPanel>
