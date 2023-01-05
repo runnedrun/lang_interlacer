@@ -12,10 +12,14 @@ export default function LoginBar({
     </div>
   ) : (
     <div className="w-full text-right my-2">
-      <Button className="mx-2">Sign In</Button>
-      <Button className="mx-2" variant="contained">
-        Sign Up
-      </Button>
+      <Link href="/sign_in" passHref>
+        <Button className="mx-2">Sign In</Button>
+      </Link>
+      <Link href="/sign_up" passHref>
+        <Button className="mx-2" variant="contained">
+          Sign Up
+        </Button>
+      </Link>
     </div>
   )
 }
