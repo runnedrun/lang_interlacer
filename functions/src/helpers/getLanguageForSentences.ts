@@ -16,9 +16,7 @@ const languageCheckers = {
   [Language.Chinese]: isChinese,
 }
 
-export default function getLanguageForSentences(
-  sentences: Sentence[]
-): Language {
+export function getLanguageForSentences(sentences: Sentence[]): Language {
   const firstSentence = sentences[0]
   return objKeys(languageCheckers).find((lang) => {
     const checker = languageCheckers[lang]

@@ -1,26 +1,22 @@
+import { setters } from "@/data/fb"
 import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
-import { filtered } from "@/data/paramObsBuilders/filtered"
 import { prop } from "@/data/paramObsBuilders/prop"
-import { stringParam } from "@/data/paramObsBuilders/stringParam"
-import { map } from "rxjs"
-import { component } from "../view_builder/component"
-import TabContext from "@mui/lab/TabContext"
+import { settable } from "@/data/paramObsBuilders/settable"
+import { DocumentJob } from "@/data/types/DocumentJob"
 import { Language } from "@/data/types/RawParagraph"
-
-import * as React from "react"
-import Tab from "@mui/material/Tab"
-import Box from "@mui/material/Box"
+import TabContext from "@mui/lab/TabContext"
 import TabList from "@mui/lab/TabList"
 import TabPanel from "@mui/lab/TabPanel"
-import { settable } from "@/data/paramObsBuilders/settable"
 import { FormControlLabel, Switch } from "@mui/material"
-import { DocumentJob } from "@/data/types/DocumentJob"
-import { setters } from "@/data/fb"
+import Box from "@mui/material/Box"
+import Tab from "@mui/material/Tab"
+import * as React from "react"
+import { component } from "../view_builder/component"
 
 export const DocPreviewHeader = component(
   () => {
     const docJob = docForKey("documentJob", prop("docKey"))
-    const languages = prop("languages")
+    const languages = prop("languages", undefined as Language[])
     return {
       docJob,
       languages,
@@ -32,11 +28,6 @@ export const DocPreviewHeader = component(
     languages,
     selectedTab,
     setSelectedTab,
-  }: {
-    docJob: DocumentJob
-    languages: any | Language[] // this should be fixed!
-    selectedTab: string
-    setSelectedTab: any
   }) => {
     const onChange = (_, newValue) => {
       setSelectedTab(newValue)
@@ -44,7 +35,7 @@ export const DocPreviewHeader = component(
 
     let pronunciationSwitchText: string = "Show pronunciation"
     if (languages.includes(Language.Chinese)) {
-      pronunciationSwitchText += " (ja, zh)"
+      pronunciationSwitchText += " (pinyin)"
     } else if (languages.includes(Language.Japanese)) {
       pronunciationSwitchText += " (furigana)"
     }

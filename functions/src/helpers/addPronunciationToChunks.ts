@@ -1,5 +1,5 @@
 import { Language, Sentence } from "@/data/types/RawParagraph"
-import getLanguageForSentences from "@/functions/src/helpers/getLanguageForSentences"
+import { getLanguageForSentences } from "@/functions/src/helpers/getLanguageForSentences"
 import { Chunk } from "@/views/doc/ChunkDisplay"
 import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation

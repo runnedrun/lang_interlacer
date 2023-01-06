@@ -12,11 +12,10 @@ import { component } from "@/views/view_builder/component"
 import { OrderByDirection } from "@firebase/firestore"
 import { CircularProgress } from "@mui/material"
 import { Language } from "@/data/types/RawParagraph"
-import getLanguageForSentences from "@/functions/src/helpers/getLanguageForSentences"
+import { getLanguageForSentences } from "@/functions/src/helpers/getLanguageForSentences"
 import React from "react"
 import { map } from "rxjs"
 import ErrorPage from "next/error"
-import { logObs } from "@/helpers/logObs"
 
 const dataFunc = memoizeDataFunc((renderId: string) => {
   const param = stringParam("docKey", undefined as ForeignKey<"documentJob">)
@@ -84,7 +83,7 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
     return <ErrorPage statusCode={404}></ErrorPage>
   }
 
-  const languages = [
+  const languages: Language[] = [
     getLanguageForSentences(chunks[0].lang1),
     getLanguageForSentences(chunks[0].lang2),
   ]
