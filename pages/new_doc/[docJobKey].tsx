@@ -20,6 +20,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material"
+import { withAuthUserSSR } from "next-firebase-auth"
 import React from "react"
 
 const TranslationDescription = ({
@@ -220,6 +221,10 @@ const NewDocView = component(
   }
 )
 
-export const getServerSideProps = buildPrefetchHandler(dataFunc)
+export const getServerSideProps = async (arg) => {
+  const prefetchedProps = await buildPrefetchHandler(dataFunc)(arg)
+  const authProps = await withAuthUserSSR()(arg)
+  return { ...prefetchedProps, ...authProps }
+}
 
 export default NewDocView

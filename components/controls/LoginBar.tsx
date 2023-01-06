@@ -1,14 +1,17 @@
 import { Button } from "@mui/material"
 import Link from "next/link"
-import { useAuthUser } from "next-firebase-auth"
+import { withAuthUser, useAuthUser } from "next-firebase-auth"
+import { getAuth, signOut } from "@firebase/auth"
 
-export function LoginBar(): JSX.Element {
+const LoginBarComponent = (): JSX.Element => {
   const AuthUser = useAuthUser()
+  console.log(AuthUser)
+  console.log(AuthUser.id)
   return AuthUser.id ? (
     <div className="w-full text-right my-2">
-      <Link href="/api/logout" passHref>
-        <Button className="mx-2">Log Out</Button>
-      </Link>
+      <Button className="mx-2" onClick={() => signOut(getAuth())}>
+        Log Out
+      </Button>
     </div>
   ) : (
     <div className="w-full text-right my-2">
@@ -23,3 +26,5 @@ export function LoginBar(): JSX.Element {
     </div>
   )
 }
+
+export const LoginBar = withAuthUser()(LoginBarComponent)
