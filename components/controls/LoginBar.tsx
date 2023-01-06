@@ -2,7 +2,7 @@ import { Button } from "@mui/material"
 import Link from "next/link"
 import { useAuthUser } from "next-firebase-auth"
 
-export default function LoginBar(): JSX.Element {
+export function LoginBar(): JSX.Element {
   const AuthUser = useAuthUser()
   return AuthUser.id ? (
     <div className="w-full text-right my-2">

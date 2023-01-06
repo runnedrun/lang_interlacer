@@ -2,6 +2,7 @@ import batchPromises from "batch-promises"
 import * as deepl from "deepl-node"
 import * as functions from "firebase-functions"
 import { chunk } from "lodash"
+import { uploadSentenceFile } from "../helpers/sentenceFileHelpers"
 import { fbSet } from "../helpers/writer"
 import { getSents } from "../prepEmbedding"
 
@@ -38,9 +39,7 @@ export const translateText = async (data: TranslateTextTaskData) => {
   const allTextJoined = translatedChunks.join(" ")
   const sentencesAgain = await getSents(allTextJoined)
 
-  await fbSet("documentJob", data.docJobKey, {
-    lang2Sentences: sentencesAgain,
-  })
+  await uploadSentenceFile(sentencesAgain, data.docJobKey, 2)
 
   console.log("translation job complete")
 }

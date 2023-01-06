@@ -6,6 +6,13 @@ export type DocumentJobSettings = {
   showPronunciation?: boolean
   splitWords?: boolean
   showScores?: boolean
+  showHiragana?: boolean
+}
+
+export type DocumentJobFile = {
+  name?: string
+  url?: string
+  internalName?: string
 }
 
 export type DocumentJob = Model<
@@ -13,8 +20,12 @@ export type DocumentJob = Model<
   {
     lang1Text?: string
     lang2Text?: string
-    lang1Sentences?: string[]
-    lang2Sentences?: string[]
+    lang1File?: DocumentJobFile
+    lang2File?: DocumentJobFile
+    lang1SentenceFile: DocumentJobFile
+    lang2SentenceFile: DocumentJobFile
+    // lang1Sentences?: string[]
+    // lang2Sentences?: string[]
     generateTranslation?: boolean
     targetLanguage?: Language
     generatePinyin?: boolean

@@ -1,10 +1,12 @@
+import axios from "axios"
 import { Timestamp } from "firebase-admin/firestore"
 import { getFunctions } from "firebase-admin/functions"
 import * as functions from "firebase-functions"
 import { DocumentJob } from "../../../data/types/DocumentJob"
-import { Language } from "../../../data/types/RawParagraph"
-import { fbSet } from "../helpers/writer"
-import { getSents } from "../prepEmbedding"
+import {
+  getAndCacheSentences,
+  getSentencesFromInternalFilename,
+} from "../helpers/sentenceFileHelpers"
 import {
   prepareEmbeddings,
   PrepareEmbeddingsTask,
@@ -13,18 +15,6 @@ import {
   translateText,
   TranslateTextTaskData,
 } from "../tasks/translateTextTask"
-
-const getAndCacheSentences = async (
-  lang1Text: string,
-  docJobKey: string,
-  key: "lang1Sentences" | "lang2Sentences"
-) => {
-  const sentences = await getSents(lang1Text)
-  await fbSet("documentJob", docJobKey, {
-    [key]: sentences,
-  })
-  return sentences
-}
 
 const startEmbeddingTask = (data: PrepareEmbeddingsTask) => {
   if (process.env.NODE_ENV === "development") {
@@ -44,13 +34,13 @@ const startTranslationTask = (data: TranslateTextTaskData) => {
 
 export const triggerEmbeddingPreparationOnJobCreate = functions.firestore
   .document("documentJob/{docId}")
-  .onUpdate(async (change) => {
+  .onWrite(async (change) => {
     const oldData = change.before.data() as DocumentJob
     const newData = change.after.data() as DocumentJob
 
     const lastJobTimestamp = new Timestamp(
-      oldData.startJob?.seconds || 0,
-      oldData.startJob?.nanoseconds || 0
+      oldData?.startJob?.seconds || 0,
+      oldData?.startJob?.nanoseconds || 0
     )
 
     const currentJobTimestamp = new Timestamp(
@@ -68,7 +58,7 @@ export const triggerEmbeddingPreparationOnJobCreate = functions.firestore
     )
 
     const translationComplete =
-      !oldData.lang2Sentences && newData.lang2Sentences
+      !oldData?.lang2SentenceFile && newData.lang2SentenceFile
 
     if (!(jobStarted || translationComplete)) {
       return
@@ -76,20 +66,27 @@ export const triggerEmbeddingPreparationOnJobCreate = functions.firestore
 
     console.log("lang", newData.targetLanguage)
 
+    const lang1TextPromise = newData.lang1File?.url
+      ? axios.get(newData.lang1File?.url).then((_) => _.data)
+      : Promise.resolve(newData.lang1Text)
+
+    const lang2TextPromise = newData.lang2File?.url
+      ? axios.get(newData.lang2File?.url).then((_) => _.data)
+      : Promise.resolve(newData.lang2Text)
+
+    const lang1Text = await lang1TextPromise
+    const lang2Text = await lang2TextPromise
+
     const lang1SentencesPromise = getAndCacheSentences(
-      newData.lang1Text,
+      lang1Text,
       change.after.id,
-      "lang1Sentences"
+      1
     )
 
-    const lang2SentencesPromise = newData.lang2Sentences
-      ? Promise.resolve(newData.lang2Sentences)
-      : newData.lang2Text
-      ? getAndCacheSentences(
-          newData.lang2Text,
-          change.after.id,
-          "lang2Sentences"
-        )
+    const lang2SentencesPromise = newData.lang2SentenceFile?.internalName
+      ? getSentencesFromInternalFilename(newData.lang2SentenceFile.internalName)
+      : lang2Text
+      ? getAndCacheSentences(lang2Text, change.after.id, 2)
       : Promise.resolve(null as [])
 
     const [lang1Sentences, lang2Sentences] = await Promise.all([
