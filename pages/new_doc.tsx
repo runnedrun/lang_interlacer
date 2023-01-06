@@ -1,12 +1,12 @@
 import { creators } from "@/data/fb"
 import { CircularProgress } from "@mui/material"
 import { useEffect } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 const GenNewDocView = () => {
   useEffect(() => {
-    creators.documentJob({}).then((ref) => {
-      window.location.href = `/new_doc/${ref.id}`
-    })
+    const uuid = uuidv4()
+    window.location.href = `/new_doc/${uuid}`
   }, [])
 
   return (
