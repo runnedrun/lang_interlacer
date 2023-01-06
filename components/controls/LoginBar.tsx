@@ -1,12 +1,11 @@
 import { Button } from "@mui/material"
 import Link from "next/link"
-import { withAuthUser, useAuthUser } from "next-firebase-auth"
+import { withAuthUser, useAuthUser, AuthAction } from "next-firebase-auth"
 import { getAuth, signOut } from "@firebase/auth"
 
 const LoginBarComponent = (): JSX.Element => {
   const AuthUser = useAuthUser()
-  console.log(AuthUser)
-  console.log(AuthUser.id)
+
   return AuthUser.id ? (
     <div className="w-full text-right my-2">
       <Button className="mx-2" onClick={() => signOut(getAuth())}>
@@ -27,4 +26,6 @@ const LoginBarComponent = (): JSX.Element => {
   )
 }
 
-export const LoginBar = withAuthUser()(LoginBarComponent)
+export const LoginBar = withAuthUser({
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+})(LoginBarComponent)
