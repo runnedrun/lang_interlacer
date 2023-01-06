@@ -6,14 +6,17 @@ import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
 import { EditingState, fbWriter } from "@/data/firebaseObsBuilders/fbWriter"
 import { settable } from "@/data/paramObsBuilders/settable"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
-import { DocumentJob } from "@/data/types/DocumentJob"
+import { DocumentJob, DocumentJobFile } from "@/data/types/DocumentJob"
 import { Language } from "@/data/types/RawParagraph"
 import { buildErrorOrLabelText } from "@/page_helpers/mui/buildErrorOrLabelText"
+import { DocTextInputs } from "@/views/new_doc/DocTextInputs"
 import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
 import { Timestamp } from "@firebase/firestore"
+import { getStorage, uploadBytes } from "@firebase/storage"
 import {
   Button,
+  CircularProgress,
   FormControl,
   FormHelperText,
   Input,
@@ -22,8 +25,8 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material"
-import Link from "next/link"
-import React from "react"
+import { getDownloadURL, ref } from "firebase/storage"
+import React, { useState } from "react"
 
 const TranslationDescription = ({
   generateTranslation,
@@ -59,14 +62,14 @@ const dataFunc = () => {
     beforeWrite: ({ baseData, data, setError, errors }) => {
       if (data.lang1Text?.length > MAX_TEXT_LENGTH) {
         setError("lang1Text", "Text is too long")
-      } else if (!data.lang1Text?.length) {
+      } else if (!data.lang1Text?.length && !data.lang1File?.url) {
         setError("lang1Text", "Please enter some text")
       }
 
       if (!data.generateTranslation) {
         if (data.lang2Text?.length > MAX_TEXT_LENGTH) {
           setError("lang2Text", "Text is too long")
-        } else if (!data.lang2Text?.length) {
+        } else if (!data.lang2Text?.length && !data.lang2File?.url) {
           setError("lang2Text", "Please enter some text")
         }
       }
@@ -91,10 +94,10 @@ type StepCompleteFn = (docJob: DocumentJob) => Boolean
 
 const stepsForProgress: StepCompleteFn[] = [
   (docJob) => {
-    return !!docJob.lang1Sentences
+    return !!docJob.lang1SentenceFile
   },
   (docJob) => {
-    return !!docJob.lang2Sentences
+    return !!docJob.lang2SentenceFile
   },
   (docJob) => {
     return !!docJob.jobCompletedAt
@@ -197,55 +200,22 @@ const NewDocView = component(
                 </div>
               </div>
             </div>
+            <DocTextInputs
+              currentData={currentData}
+              errors={errors}
+              header={`Paste in up to 10,000 characters of text in any language`}
+              updateField={updateField}
+              langNumber={1}
+            ></DocTextInputs>
 
-            <div className="w-full mb-10">
-              <FormHelperText id="lang1-helper-text" className="mb-2">
-                {`Paste in up to 10,000 characters of text in any language`}
-              </FormHelperText>
-              <FormControl
-                className="w-full"
-                disabled={jobStarted}
-                error={!!errors.byKey.lang1Text}
-              >
-                <InputLabel htmlFor="lang1-input">
-                  {buildErrorOrLabelText("Language 1", errors.byKey.lang1Text)}
-                </InputLabel>
-                <Input
-                  id="lang1-input"
-                  aria-describedby="lang1-helper-text"
-                  multiline
-                  className="w-full"
-                  value={currentData.lang1Text}
-                  onChange={(e) => updateField("lang1Text", e.target.value)}
-                />
-              </FormControl>
-            </div>
             {!currentData.generateTranslation && (
-              <div className="w-full">
-                <FormHelperText id="lang2-helper-text" className="mb-2">
-                  {`Paste the translation of the text above in any other language`}
-                </FormHelperText>
-                <FormControl
-                  className="w-full"
-                  disabled={jobStarted}
-                  error={!!errors.byKey.lang2Text}
-                >
-                  <InputLabel htmlFor="lang2-input">
-                    {buildErrorOrLabelText(
-                      "Language 2",
-                      errors.byKey["lang2Text"]
-                    )}
-                  </InputLabel>
-                  <Input
-                    id="lang2-input"
-                    aria-describedby="lang2-helper-text"
-                    multiline
-                    className="w-full"
-                    value={currentData.lang2Text}
-                    onChange={(e) => updateField("lang2Text", e.target.value)}
-                  />
-                </FormControl>
-              </div>
+              <DocTextInputs
+                currentData={currentData}
+                errors={errors}
+                header={`Paste the translation of the text above in any other language`}
+                updateField={updateField}
+                langNumber={2}
+              ></DocTextInputs>
             )}
             {bottomBar}
           </div>
