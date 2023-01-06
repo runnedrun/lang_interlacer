@@ -1,7 +1,9 @@
 import { Language, Sentence } from "@/data/types/RawParagraph"
 import { objKeys } from "@/helpers/objKeys"
 import { Chunk } from "@/views/doc/ChunkDisplay"
-import pinyin from "pinyin"
+import pinyin from "pinyin" // Chinese pronunciation
+import Kuroshiro from "kuroshiro" // Japanese pronunciation
+import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
 
 const isChinese = (text: string) => {
   const re = /[\u4e00-\u9fa5]/
@@ -26,12 +28,19 @@ const getLanguageForSentences = (sentences: Sentence[]) => {
   })
 }
 
-const getPronunciationForSentences = (
+export const getPronunciationForSentences = async (
   lang: Language,
   sentences: Sentence[]
-) => {
-  const pronunciations = sentences
-    .map((sentence) => {
+): Promise<Sentence[]> => {
+  // Initialization for Japanese pronunciation
+  let kuroshiro: Kuroshiro
+  if (lang === Language.Japanese) {
+    kuroshiro = new Kuroshiro()
+    await kuroshiro.init(new KuromojiAnalyzer())
+  }
+
+  const pronunciationPromises = sentences
+    .map(async (sentence) => {
       if (lang === Language.Chinese) {
         const pronunciationResults = pinyin(sentence.text, {
           group: true,
@@ -40,11 +49,23 @@ const getPronunciationForSentences = (
 
         const text = pronunciationResults.filter(Boolean).flat().join(" ")
         return { sentenceIndex: sentence.sentenceIndex, text } as Sentence
+      } else if (lang === Language.Japanese) {
+        const text = await kuroshiro.convert(sentence.text, {
+          to: "hiragana",
+          mode: "furigana",
+        })
+
+        return {
+          sentenceIndex: sentence.sentenceIndex,
+          text,
+        } as Sentence
       } else {
         return null
       }
     })
     .filter(Boolean)
+
+  const pronunciations = await Promise.all(pronunciationPromises)
 
   return pronunciations.length ? pronunciations : null
 }
@@ -61,17 +82,19 @@ export const addPronunciationToChunks = ({
   const lang1Language = getLanguageForSentences(chunks[0].lang1)
   const lang2Language = getLanguageForSentences(chunks[0].lang2)
 
-  const chunksWithPronunciations = chunks.map((chunk) => {
-    chunk.lang1Pronunciation = getPronunciationForSentences(
+  const chunksWithPronunciationPromises = chunks.map(async (chunk) => {
+    chunk.lang1Pronunciation = await getPronunciationForSentences(
       lang1Language,
       chunk.lang1
     )
-    chunk.lang2Pronunciation = getPronunciationForSentences(
+    chunk.lang2Pronunciation = await getPronunciationForSentences(
       lang2Language,
       chunk.lang2
     )
     return chunk
   })
 
-  return Promise.resolve(chunksWithPronunciations)
+  const chunksWithPronunciations = Promise.all(chunksWithPronunciationPromises)
+
+  return chunksWithPronunciations
 }

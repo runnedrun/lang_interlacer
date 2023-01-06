@@ -11,13 +11,14 @@ export const SentenceDisplay = ({
   isSelected?: boolean
 }) => {
   return (
-    <span
-      onClick={() => {
-        onClick()
-      }}
-      className={classNames("ml-1", { "font-bold": isSelected })}
-    >
-      {sentence.text}
-    </span>
+    sentence?.text && (
+      <span
+        onClick={() => {
+          onClick()
+        }}
+        className={classNames("ml-1", { "font-bold": isSelected })}
+        dangerouslySetInnerHTML={{ __html: sentence.text }}
+      />
+    )
   )
 }
