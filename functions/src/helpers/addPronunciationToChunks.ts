@@ -1,9 +1,9 @@
+import { FinalizedChunk, FinalizedSentence } from "@/data/types/FinalizedChunk"
 import { Language, Sentence } from "@/data/types/RawParagraph"
 import { getLanguageForSentences } from "@/functions/src/helpers/getLanguageForSentences"
-import { Chunk } from "@/views/doc/ChunkDisplay"
-import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
+import pinyin from "pinyin" // Chinese pronunciation
 
 export const getPronunciationForSentences = async (
   lang: Language,

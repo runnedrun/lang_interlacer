@@ -13,6 +13,31 @@ import Tab from "@mui/material/Tab"
 import * as React from "react"
 import { component } from "../view_builder/component"
 
+const EpubCreationButton = ({
+  epubFileLocation,
+  docId,
+}: {
+  epubFileLocation: string
+  docId: string
+}) => {
+  const buttonText = epubFileLocation ? "Regenerate Epub" : "Generate Epub"
+  return (
+    <div>
+      <Button
+        onClick={() => {
+          setters.documentJob(docId, {
+            triggerEpubCreation: Timestamp.now(),
+          })
+        }}
+        variant="contained"
+      >
+        {buttonText}
+      </Button>
+      <a href={epubFileLocation}>Download</a>
+    </div>
+  )
+}
+
 export const DocPreviewHeader = component(
   () => {
     const docJob = docForKey("documentJob", prop("docKey"))
@@ -73,18 +98,7 @@ export const DocPreviewHeader = component(
             <TabPanel value="2">Item Two</TabPanel>
           </TabContext>
         </div>
-        <div>
-          <Button
-            onClick={() => {
-              setters.documentJob(uid, {
-                triggerEpubCreation: Timestamp.now(),
-              })
-            }}
-            variant="contained"
-          >
-            Generate Epub
-          </Button>
-        </div>
+        <div></div>
       </div>
     )
   }
