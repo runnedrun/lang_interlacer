@@ -30,7 +30,11 @@ type Paragraph = {
 }
 
 const isLatin = (text: string) => {
-  return /^[a-zA-Z0-9- ]*$/.test(text)
+  const firstSample = text.slice(0, 1000)
+  const res = firstSample.match(/[a-zA-Z0-9-]/g)
+  const numberOfLatinChars = res ? res.length : 0
+  const percLatin = numberOfLatinChars / firstSample.length
+  return percLatin > 0.5
 }
 
 const getSentsFromServer = async (text: string) => {
@@ -51,8 +55,10 @@ const getSentsFromServer = async (text: string) => {
 
 export const getSents = async (text: string) => {
   const clean = removeNewLines(text)
+    .replace(/&quot;/g, '"')
+    .replace(/\s{2,}/g, " ")
 
-  const textIsLatin = isLatin(clean.slice(0, 10))
+  const textIsLatin = isLatin(clean)
 
   const results = await (textIsLatin
     ? Promise.resolve(nlp.readDoc(clean).sentences().out())

@@ -74,7 +74,7 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
           ? from(
               addPronunciationToChunksCallable({
                 chunks: interlacedChunks,
-              })
+              }) as Promise<Chunk[]>
             )
           : of(interlacedChunks)
       })

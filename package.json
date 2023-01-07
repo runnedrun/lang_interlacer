@@ -64,6 +64,8 @@
     "dotenv": "^16.0.0",
     "draft-js": "^0.11.7",
     "draftjs-to-html": "^0.9.1",
+    "epub-gen": "^0.1.0",
+    "epub-gen-memory": "^1.0.10",
     "express": "^4.17.1",
     "fast-json-stable-stringify": "^2.1.0",
     "file-loader": "^6.2.0",
