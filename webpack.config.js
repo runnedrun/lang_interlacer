@@ -1,8 +1,9 @@
 const path = require("path")
 const nodeExternals = require("webpack-node-externals")
 
+console.log("mode", process.env.WEBPACK_MODE)
 module.exports = {
-  mode: "development",
+  mode: process.env.WEBPACK_MODE || "development",
   entry: "./functions/src/index",
   target: "node",
   module: {

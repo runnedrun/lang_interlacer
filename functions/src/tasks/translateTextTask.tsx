@@ -19,14 +19,16 @@ export type TranslateTextTaskData = {
 }
 
 export const translateText = async (data: TranslateTextTaskData) => {
+  console.log("beginning translation for ", data.sentences.length, "sentences")
   const translatedChunks = []
-  const chunked = chunk(data.sentences, 50)
+  const chunked = chunk(data.sentences, 15)
 
   await batchPromises(
     5,
     Array.from(chunked.entries()),
     async ([i, page]: [number, string[]]) => {
       const joinedSentences = page.join(" ")
+      console.log("joinedSentences", joinedSentences.length)
       const translation = await translator.translateText(
         joinedSentences,
         null,

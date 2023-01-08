@@ -22,7 +22,7 @@ const EpubCreationButton = ({
 }) => {
   const buttonText = epubFileLocation ? "Regenerate Epub" : "Generate Epub"
   return (
-    <div>
+    <div className="flex flex-col gap-2">
       <Button
         onClick={() => {
           setters.documentJob(docId, {
@@ -49,7 +49,7 @@ export const DocPreviewHeader = component(
     }
   },
   ({
-    docJob: { settings = {}, uid },
+    docJob: { settings = {}, uid, epubFile },
     languages,
     selectedTab,
     setSelectedTab,
@@ -98,7 +98,12 @@ export const DocPreviewHeader = component(
             <TabPanel value="2">Item Two</TabPanel>
           </TabContext>
         </div>
-        <div></div>
+        <div>
+          <EpubCreationButton
+            docId={uid}
+            epubFileLocation={epubFile?.url}
+          ></EpubCreationButton>
+        </div>
       </div>
     )
   }
