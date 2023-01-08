@@ -2,7 +2,7 @@ import { FinalizedSentence } from "@/data/types/FinalizedChunk"
 import { Language } from "@/data/types/RawParagraph"
 import { objKeys } from "@/helpers/objKeys"
 
-const isChinese = (text: string) => {
+export const isChinese = (text: string) => {
   const re = /[\u4e00-\u9fa5]/
   return re.test(text)
 }

@@ -1,7 +1,7 @@
 import batchPromises from "batch-promises"
 import * as deepl from "deepl-node"
 import * as functions from "firebase-functions"
-import { chunk } from "lodash"
+import { chunk, maxBy } from "lodash"
 import { uploadSentenceFile } from "../helpers/sentenceFileHelpers"
 import { fbSet } from "../helpers/writer"
 import { getSents } from "../prepEmbedding"
@@ -21,14 +21,17 @@ export type TranslateTextTaskData = {
 export const translateText = async (data: TranslateTextTaskData) => {
   console.log("beginning translation for ", data.sentences.length, "sentences")
   const translatedChunks = []
-  const chunked = chunk(data.sentences, 15)
+  const chunked = chunk(data.sentences, 30)
 
   await batchPromises(
     5,
     Array.from(chunked.entries()),
     async ([i, page]: [number, string[]]) => {
       const joinedSentences = page.join(" ")
-      console.log("joinedSentences", joinedSentences.length)
+      if (joinedSentences.length > 10000) {
+        const longest = maxBy(page, (s) => s.length)
+        console.log("lonnnggg", longest.length, longest.slice(0, 1000))
+      }
       const translation = await translator.translateText(
         joinedSentences,
         null,
@@ -49,11 +52,11 @@ export const translateText = async (data: TranslateTextTaskData) => {
 export const translateTextTask = functions.tasks
   .taskQueue({
     retryConfig: {
-      maxAttempts: 5,
+      maxAttempts: 1,
       minBackoffSeconds: 30,
     },
     rateLimits: {
-      maxConcurrentDispatches: 10,
+      maxConcurrentDispatches: 1,
     },
   })
   .onDispatch(async (data) => {

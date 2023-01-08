@@ -14534,6 +14534,13 @@ nise@^5.1.1:
     just-extend "^4.0.2"
     path-to-regexp "^1.7.0"
 
+nnsplit@^0.5.8:
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/nnsplit/-/nnsplit-0.5.8.tgz#039f83cee8c671bb2d7ed89b16526c97c9e2f673"
+  integrity sha512-gVtDMfNNqiP2N8R2HQuu8NdsCiAXNtoNfQ8v5/flS81Mp8VOESDAuIWpBd5TK0AGFDczRJP+7dJkSNkiTogjjA==
+  dependencies:
+    tractjs "^0.4.0"
+
 no-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/no-case/-/no-case-3.0.4.tgz"
@@ -18634,6 +18641,13 @@ tr46@~0.0.3:
   resolved "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
   integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
 
+tractjs@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/tractjs/-/tractjs-0.4.0.tgz#c7376ef0da8bf71780304b4277fac6b15c8b2dc7"
+  integrity sha512-mxZBsLj7tLe+btz2aQKdCigvNIVbcmkVHmKl0MfAu0TFs3biJImouGCFCV+i6eNrG4PpX9atDGd28JD83N+Zxg==
+  dependencies:
+    web-worker "^1.0.0"
+
 "traverse@>=0.3.0 <0.4":
   version "0.3.9"
   resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.3.9.tgz#717b8f220cc0bb7b44e40514c22b2e8bbc70d8b9"
@@ -19447,6 +19461,11 @@ web-streams-polyfill@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz#71c2718c52b45fd49dbeee88634b3a60ceab42a6"
   integrity sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==
+
+web-worker@^1.0.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/web-worker/-/web-worker-1.2.0.tgz#5d85a04a7fbc1e7db58f66595d7a3ac7c9c180da"
+  integrity sha512-PgF341avzqyx60neE9DD+XS26MMNMoUQRz9NOZwW32nPQrF6p77f1htcnjBSEV8BGMKZ16choqUG4hyI0Hx7mA==
 
 webidl-conversions@^3.0.0:
   version "3.0.1"

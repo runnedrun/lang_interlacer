@@ -1,13 +1,11 @@
-import { Language } from "@/data/types/RawParagraph"
 import * as functions from "firebase-functions"
-import { testData } from "./helpers/testData"
-import { english, chinese } from "./helpers/hp"
-import { fbSet } from "./helpers/writer"
-import fetch from "node-fetch"
-import wink from "wink-nlp"
-import winkModel from "wink-eng-lite-web-model"
 import { chunk } from "lodash"
+import fetch from "node-fetch"
+import winkModel from "wink-eng-lite-web-model"
+import wink from "wink-nlp"
 import { generateRawParagraphKey } from "./helpers/generateRawParagraphKey"
+import { chinese, english } from "./helpers/hp"
+import { fbSet } from "./helpers/writer"
 
 const nlp = wink(winkModel)
 
@@ -52,10 +50,34 @@ const getSentsFromServer = async (text: string) => {
     ).json()
   ).results
 }
+const MAX_SENTENCE_LENGTH = 500
+const backUpSplitSentences = (sentences: string[]) => {
+  const backupSplitted = sentences.map((sentence) => {
+    if (sentence.length > MAX_SENTENCE_LENGTH) {
+      const splitted = sentence.split(/.。/g)
+      const finalSplit = splitted
+        .map((sentence) => {
+          if (sentence.length > MAX_SENTENCE_LENGTH) {
+            return chunk(sentence, MAX_SENTENCE_LENGTH).map((chunk) =>
+              chunk.join("")
+            )
+          } else {
+            return sentence
+          }
+        })
+        .flat()
+      return finalSplit
+    } else {
+      return [sentence]
+    }
+  })
+  return backupSplitted.flat()
+}
 
 export const getSents = async (text: string) => {
   const clean = removeNewLines(text)
     .replace(/&quot;/g, '"')
+    .replace(/“/g, '"')
     .replace(/\s{2,}/g, " ")
 
   const textIsLatin = isLatin(clean)
@@ -64,7 +86,7 @@ export const getSents = async (text: string) => {
     ? Promise.resolve(nlp.readDoc(clean).sentences().out())
     : getSentsFromServer(clean).then((_) => _[0].sentences))
 
-  const cleanResults = results.filter(Boolean)
+  const cleanResults = backUpSplitSentences(results.filter(Boolean))
 
   return cleanResults as string[]
 }
@@ -118,7 +140,7 @@ export const saveEmbeddingsAndParagraphs = async (
 }
 
 const removeNewLines = (text: string) => {
-  return text.replace(/(\r\n|\n|\r)/gm, "")
+  return text.replace(/(\r\n|\n|\r)/gm, " ")
 }
 
 const prepEmbeddingFn = async (lang1Text: string, lang2Text: string) => {
