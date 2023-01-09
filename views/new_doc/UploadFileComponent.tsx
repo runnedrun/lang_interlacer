@@ -49,7 +49,7 @@ export const UploadFileComponent = ({
             </Button>
           </Tooltip>
         ) : (
-          <Tooltip title="File upload only available to logged in users. Sign in or create an account.">
+          <Tooltip title="Anonymous users can only paste in text. Sign in or create an account to upload files.">
             <span>
               <Button
                 variant="contained"

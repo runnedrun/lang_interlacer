@@ -22,7 +22,11 @@ import {
   ToggleButtonGroup,
   Tooltip,
 } from "@mui/material"
-import { withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth"
+import {
+  AuthAction,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from "next-firebase-auth"
 import React from "react"
 
 const TranslationDescription = ({
@@ -148,7 +152,7 @@ const NewDocView = component(
     return (
       <div className="w-full flex justify-center">
         <div className="md:w-2/3 md:p-0 px-2 justify-center max-w-3xl">
-          <LoginBar userId={userId} />
+          <LoginBar />
           <div className="text-5xl mt-5 text-center">Language Interlacer</div>
           <div className="gap-5 flex flex-col w-full p-5">
             <div className="flex flex-col items-center mb-5">
@@ -158,7 +162,7 @@ const NewDocView = component(
                     title={
                       userId
                         ? ""
-                        : "Automatic translation only available to logged in users. Sign in or create an account."
+                        : "Anonymous users can only use their own translation. Sign in or create an account to use our translation."
                     }
                   >
                     <ToggleButtonGroup
@@ -240,4 +244,6 @@ export const getServerSideProps = withAuthUserTokenSSR()(async (context) => {
   return { props: { ...props, userId: context.AuthUser.id } }
 })
 
-export default withAuthUser()(NewDocView)
+export default withAuthUser({ whenUnauthedBeforeInit: AuthAction.SHOW_LOADER })(
+  NewDocView
+)

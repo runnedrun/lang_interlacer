@@ -184,7 +184,10 @@ export function component<MapToResolve extends Record<any, any>>(
       return React.memo(
         props?.context?.requiresUser
           ? withAuthUser({
-              whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
+              whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+              whenUnauthedAfterInit: AuthAction.RENDER,
+              // If instead you want to redirect to the sign in page on the first visit and after logging out
+              // whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
             })(ChildComponent as any)
           : ChildComponent
       ) as typeof ChildComponent
