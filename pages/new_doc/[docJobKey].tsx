@@ -1,3 +1,4 @@
+import { LoginBar } from "@/components/controls/LoginBar"
 import {
   buildStringEnumSelector,
   getFromStringEnum,
@@ -6,27 +7,25 @@ import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
 import { EditingState, fbWriter } from "@/data/firebaseObsBuilders/fbWriter"
 import { settable } from "@/data/paramObsBuilders/settable"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
-import { DocumentJob, DocumentJobFile } from "@/data/types/DocumentJob"
+import { DocumentJob } from "@/data/types/DocumentJob"
 import { Language } from "@/data/types/RawParagraph"
-import { buildErrorOrLabelText } from "@/page_helpers/mui/buildErrorOrLabelText"
 import { DocTextInputs } from "@/views/new_doc/DocTextInputs"
 import { buildPrefetchHandler } from "@/views/view_builder/buildPrefetchHandler"
 import { component } from "@/views/view_builder/component"
 import { Timestamp } from "@firebase/firestore"
-import { getStorage, uploadBytes } from "@firebase/storage"
 import {
   Button,
-  CircularProgress,
   FormControl,
-  FormHelperText,
-  Input,
-  InputLabel,
   LinearProgress,
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material"
-import { getDownloadURL, ref } from "firebase/storage"
-import React, { useState } from "react"
+import {
+  AuthAction,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from "next-firebase-auth"
+import React from "react"
 
 const TranslationDescription = ({
   generateTranslation,
@@ -150,6 +149,7 @@ const NewDocView = component(
     return (
       <div className="w-full flex justify-center">
         <div className="md:w-2/3 md:p-0 px-2 justify-center max-w-3xl">
+          <LoginBar />
           <div className="text-5xl mt-5 text-center">Language Interlacer</div>
           <div className="gap-5 flex flex-col w-full p-5">
             <div className="flex flex-col items-center mb-5">
@@ -225,6 +225,12 @@ const NewDocView = component(
   }
 )
 
-export const getServerSideProps = buildPrefetchHandler(dataFunc)
+export const getServerSideProps = async (...args) => {
+  const prefetchedProps = await buildPrefetchHandler(dataFunc)(args[0])
+  const authProps = await withAuthUserTokenSSR()(...args)
+  return { ...prefetchedProps, ...authProps }
+}
 
-export default NewDocView
+export default withAuthUser({ whenUnauthedBeforeInit: AuthAction.SHOW_LOADER })(
+  NewDocView
+)
