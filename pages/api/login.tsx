@@ -7,7 +7,6 @@ initAuth()
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    console.log("SINGININGN")
     await setAuthCookies(req, res)
   } catch (e) {
     console.error("err with login:", e)

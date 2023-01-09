@@ -5,6 +5,7 @@ import {
 } from "@/components/hoc/buildEnumSelector"
 import { docForKey } from "@/data/firebaseObsBuilders/docForKey"
 import { EditingState, fbWriter } from "@/data/firebaseObsBuilders/fbWriter"
+import { prop } from "@/data/paramObsBuilders/prop"
 import { settable } from "@/data/paramObsBuilders/settable"
 import { stringParam } from "@/data/paramObsBuilders/stringParam"
 import { DocumentJob } from "@/data/types/DocumentJob"
@@ -20,11 +21,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material"
-import {
-  AuthAction,
-  withAuthUser,
-  withAuthUserTokenSSR,
-} from "next-firebase-auth"
+import { withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth"
 import React from "react"
 
 const TranslationDescription = ({
@@ -86,7 +83,7 @@ const dataFunc = () => {
       return data
     },
   })
-  return { ...writer }
+  return { ...writer, userId: prop("userId", undefined as string) }
 }
 
 type StepCompleteFn = (docJob: DocumentJob) => Boolean
@@ -130,6 +127,7 @@ const NewDocView = component(
     updateField,
     writeResults: { currentData, errors },
     setEditingStateOverride,
+    userId,
   }) => {
     const jobStarted = !!currentData.startJob
 
@@ -149,7 +147,7 @@ const NewDocView = component(
     return (
       <div className="w-full flex justify-center">
         <div className="md:w-2/3 md:p-0 px-2 justify-center max-w-3xl">
-          <LoginBar />
+          <LoginBar userId={userId} />
           <div className="text-5xl mt-5 text-center">Language Interlacer</div>
           <div className="gap-5 flex flex-col w-full p-5">
             <div className="flex flex-col items-center mb-5">
@@ -225,12 +223,9 @@ const NewDocView = component(
   }
 )
 
-export const getServerSideProps = async (...args) => {
-  const prefetchedProps = await buildPrefetchHandler(dataFunc)(args[0])
-  const authProps = await withAuthUserTokenSSR()(...args)
-  return { ...prefetchedProps, ...authProps }
-}
+export const getServerSideProps = withAuthUserTokenSSR()(async (context) => {
+  const { props } = (await buildPrefetchHandler(dataFunc)(context)) as any
+  return { props: { ...props, userId: context.AuthUser.id } }
+})
 
-export default withAuthUser({ whenUnauthedBeforeInit: AuthAction.SHOW_LOADER })(
-  NewDocView
-)
+export default withAuthUser()(NewDocView)
