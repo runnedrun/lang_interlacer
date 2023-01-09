@@ -1,14 +1,14 @@
+import { FinalizedChunk, FinalizedSentence } from "@/data/types/FinalizedChunk"
 import { Language, Sentence } from "@/data/types/RawParagraph"
 import { getLanguageForSentences } from "@/functions/src/helpers/getLanguageForSentences"
-import { Chunk } from "@/views/doc/ChunkDisplay"
-import pinyin from "pinyin" // Chinese pronunciation
 import Kuroshiro from "kuroshiro" // Japanese pronunciation
 import KuromojiAnalyzer from "kuroshiro-analyzer-kuromoji" // Japanese pronunciation
+import pinyin from "pinyin" // Chinese pronunciation
 
 export const getPronunciationForSentences = async (
   lang: Language,
-  sentences: Sentence[]
-): Promise<Sentence[]> => {
+  sentences: FinalizedSentence[]
+): Promise<FinalizedSentence[]> => {
   // Initialization for Japanese pronunciation
   let kuroshiro: Kuroshiro
   if (lang === Language.Japanese) {
@@ -35,7 +35,7 @@ export const getPronunciationForSentences = async (
         return {
           sentenceIndex: sentence.sentenceIndex,
           text,
-        } as Sentence
+        }
       } else {
         return null
       }
@@ -48,10 +48,10 @@ export const getPronunciationForSentences = async (
 }
 
 export type AddPronunciationToChunksInput = {
-  chunks: Chunk[]
+  chunks: FinalizedChunk[]
 }
 
-export type AddPronunciationToChunksOutput = Chunk[]
+export type AddPronunciationToChunksOutput = FinalizedChunk[]
 
 export const addPronunciationToChunks = ({
   chunks,

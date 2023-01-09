@@ -5,3 +5,4 @@ firebase use staging
 export GOOGLE_APPLICATION_CREDENTIALS="$SRC_DIR/private_configs/demo-google-app-credentials.json"
 export FIRESTORE_EMULATOR_HOST="localhost:8071"
 export GCLOUD_PROJECT="demo-xqchinese"
+export FUNCTIONS_EMULATOR_TIMEOUT_SECONDS=540s

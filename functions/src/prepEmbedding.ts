@@ -1,23 +1,23 @@
-import { Language } from "@/data/types/RawParagraph"
 import * as functions from "firebase-functions"
-import { testData } from "./helpers/testData"
-import { english, chinese } from "./helpers/hp"
-import { fbSet } from "./helpers/writer"
-import fetch from "node-fetch"
-import wink from "wink-nlp"
-import winkModel from "wink-eng-lite-web-model"
+import batchPromises from "batch-promises"
 import { chunk } from "lodash"
+import fetch from "node-fetch"
+import winkModel from "wink-eng-lite-web-model"
+import wink from "wink-nlp"
 import { generateRawParagraphKey } from "./helpers/generateRawParagraphKey"
+import { chinese, english } from "./helpers/hp"
+import { fbSet } from "./helpers/writer"
+import axios from "axios"
 
 const nlp = wink(winkModel)
 
 // http://localhost:5011/xqchinese-325dd/us-central1/prepEmbedding
 
 const sentSplitUrl =
-  "https://sent-similarity-server-wjr62wruta-lz.a.run.app/split-sentences"
+  "https://sent-similarity-server-b5j4e5pysa-uc.a.run.app/split-sentences"
 
 const embeddingsUrl =
-  "https://sent-similarity-server-wjr62wruta-lz.a.run.app/encode-sentences"
+  "https://sent-similarity-server-b5j4e5pysa-uc.a.run.app/encode-sentences"
 
 // const sentSplitUrl =
 //   "https://runnedrun-didactic-eureka-xgr9w667rc6x96-5000.preview.app.github.dev/split-sentences"
@@ -30,52 +30,81 @@ type Paragraph = {
 }
 
 const isLatin = (text: string) => {
-  return /^[a-zA-Z0-9- ]*$/.test(text)
+  const firstSample = text.slice(0, 1000)
+  const res = firstSample.match(/[a-zA-Z0-9-]/g)
+  const numberOfLatinChars = res ? res.length : 0
+  const percLatin = numberOfLatinChars / firstSample.length
+  return percLatin > 0.5
 }
 
 const getSentsFromServer = async (text: string) => {
-  return (
-    await (
-      await fetch(sentSplitUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          texts: [text],
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-    ).json()
-  ).results
+  const resp = await axios.post(sentSplitUrl, {
+    texts: [text],
+  })
+
+  return resp.data.results
+}
+const MAX_SENTENCE_LENGTH = 500
+const backUpSplitSentences = (sentences: string[]) => {
+  const backupSplitted = sentences.map((sentence) => {
+    if (sentence.length > MAX_SENTENCE_LENGTH) {
+      const splitted = sentence.split(/.。/g)
+      const finalSplit = splitted
+        .map((sentence) => {
+          if (sentence.length > MAX_SENTENCE_LENGTH) {
+            return chunk(sentence, MAX_SENTENCE_LENGTH).map((chunk) =>
+              chunk.join("")
+            )
+          } else {
+            return sentence
+          }
+        })
+        .flat()
+      return finalSplit
+    } else {
+      return [sentence]
+    }
+  })
+  return backupSplitted.flat()
 }
 
 export const getSents = async (text: string) => {
   const clean = removeNewLines(text)
+    .replace(/&quot;/g, '"')
+    .replace(/“/g, '"')
+    .replace(/\s{2,}/g, " ")
 
-  const textIsLatin = isLatin(clean.slice(0, 10))
+  const textIsLatin = isLatin(clean)
 
   const results = await (textIsLatin
     ? Promise.resolve(nlp.readDoc(clean).sentences().out())
     : getSentsFromServer(clean).then((_) => _[0].sentences))
 
-  const cleanResults = results.filter(Boolean)
+  const cleanResults = backUpSplitSentences(results.filter(Boolean))
 
   return cleanResults as string[]
 }
 
 export const getEmbeddings = async (sentences: string[]) => {
-  const embeddingResp = await fetch(embeddingsUrl, {
-    method: "POST",
-    body: JSON.stringify({
-      paragraphs: [sentences],
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
+  const chunked = chunk(sentences, 50)
+  let allResults = []
+  await batchPromises(
+    5,
+    Array.from(chunked.entries()),
+    async ([i, chunk]: [number, string[]]) => {
+      console.log("running batch ", i, " of ", chunked.length)
 
-  const json = await embeddingResp.json()
-  return json.results.embeddings[0] as number[][]
+      const embeddingResp = await axios.post(embeddingsUrl, {
+        paragraphs: [chunk],
+      })
+
+      const json = embeddingResp.data
+      const results = json.results.embeddings as number[][]
+      allResults = allResults.concat(results)
+      console.log("batch complete", i)
+    }
+  )
+  return allResults.flat()
 }
 
 const docKey = "hp-2"
@@ -112,7 +141,7 @@ export const saveEmbeddingsAndParagraphs = async (
 }
 
 const removeNewLines = (text: string) => {
-  return text.replace(/(\r\n|\n|\r)/gm, "")
+  return text.replace(/(\r\n|\n|\r)/gm, " ")
 }
 
 const prepEmbeddingFn = async (lang1Text: string, lang2Text: string) => {

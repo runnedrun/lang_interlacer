@@ -24,11 +24,12 @@ export type DocumentJob = Model<
     lang2File?: DocumentJobFile
     lang1SentenceFile: DocumentJobFile
     lang2SentenceFile: DocumentJobFile
+    triggerEpubCreation?: Timestamp
+    epubFile?: DocumentJobFile
     // lang1Sentences?: string[]
     // lang2Sentences?: string[]
     generateTranslation?: boolean
     targetLanguage?: Language
-    generatePinyin?: boolean
     startJob?: Timestamp
     jobCompletedAt?: Timestamp
     settings?: DocumentJobSettings

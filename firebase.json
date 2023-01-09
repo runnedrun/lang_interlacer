@@ -31,7 +31,8 @@
       "**/stories/**",
       "**/styles/**",
       "**/tailwind-components/**",
-      "**/views/**"
+      "**/views/**",
+      "**/test_data/**"
     ]
   },
   "emulators": {

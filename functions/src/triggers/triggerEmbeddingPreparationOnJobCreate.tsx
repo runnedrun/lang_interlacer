@@ -26,8 +26,10 @@ const startEmbeddingTask = (data: PrepareEmbeddingsTask) => {
 
 const startTranslationTask = (data: TranslateTextTaskData) => {
   if (process.env.NODE_ENV === "development") {
+    console.log("SYNC TRANSLATION")
     return translateText(data)
   } else {
+    console.log("TASK TRANSLATION")
     return getFunctions().taskQueue("translateTextTask").enqueue(data)
   }
 }
