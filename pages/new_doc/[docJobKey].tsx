@@ -152,7 +152,7 @@ const NewDocView = component(
     return (
       <div className="w-full flex justify-center">
         <div className="md:w-2/3 md:p-0 px-2 justify-center max-w-3xl">
-          <LoginBar />
+          <LoginBar userId={userId} />
           <div className="text-5xl mt-5 text-center">Language Interlacer</div>
           <div className="gap-5 flex flex-col w-full p-5">
             <div className="flex flex-col items-center mb-5">
