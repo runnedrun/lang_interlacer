@@ -86,10 +86,10 @@ export const getSents = async (text: string) => {
 }
 
 export const getEmbeddings = async (sentences: string[]) => {
-  const chunked = chunk(sentences, 50)
+  const chunked = chunk(sentences, 500)
   let allResults = []
   await batchPromises(
-    5,
+    2,
     Array.from(chunked.entries()),
     async ([i, chunk]: [number, string[]]) => {
       console.log("running batch ", i, " of ", chunked.length)
