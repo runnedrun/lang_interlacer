@@ -33,7 +33,7 @@ const EpubCreationButton = ({
       >
         {buttonText}
       </Button>
-      <a href={epubFileLocation}>Download</a>
+      {epubFileLocation && <a href={epubFileLocation}>Download</a>}
     </div>
   )
 }
