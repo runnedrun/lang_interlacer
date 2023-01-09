@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions"
+import batchPromises from "batch-promises"
 import { chunk } from "lodash"
 import fetch from "node-fetch"
 import winkModel from "wink-eng-lite-web-model"
@@ -6,16 +7,17 @@ import wink from "wink-nlp"
 import { generateRawParagraphKey } from "./helpers/generateRawParagraphKey"
 import { chinese, english } from "./helpers/hp"
 import { fbSet } from "./helpers/writer"
+import axios from "axios"
 
 const nlp = wink(winkModel)
 
 // http://localhost:5011/xqchinese-325dd/us-central1/prepEmbedding
 
 const sentSplitUrl =
-  "https://sent-similarity-server-wjr62wruta-lz.a.run.app/split-sentences"
+  "https://sent-similarity-server-b5j4e5pysa-uc.a.run.app/split-sentences"
 
 const embeddingsUrl =
-  "https://sent-similarity-server-wjr62wruta-lz.a.run.app/encode-sentences"
+  "https://sent-similarity-server-b5j4e5pysa-uc.a.run.app/encode-sentences"
 
 // const sentSplitUrl =
 //   "https://runnedrun-didactic-eureka-xgr9w667rc6x96-5000.preview.app.github.dev/split-sentences"
@@ -36,19 +38,11 @@ const isLatin = (text: string) => {
 }
 
 const getSentsFromServer = async (text: string) => {
-  return (
-    await (
-      await fetch(sentSplitUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          texts: [text],
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-    ).json()
-  ).results
+  const resp = await axios.post(sentSplitUrl, {
+    texts: [text],
+  })
+
+  return resp.data.results
 }
 const MAX_SENTENCE_LENGTH = 500
 const backUpSplitSentences = (sentences: string[]) => {
@@ -92,18 +86,25 @@ export const getSents = async (text: string) => {
 }
 
 export const getEmbeddings = async (sentences: string[]) => {
-  const embeddingResp = await fetch(embeddingsUrl, {
-    method: "POST",
-    body: JSON.stringify({
-      paragraphs: [sentences],
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
+  const chunked = chunk(sentences, 50)
+  let allResults = []
+  await batchPromises(
+    5,
+    Array.from(chunked.entries()),
+    async ([i, chunk]: [number, string[]]) => {
+      console.log("running batch ", i, " of ", chunked.length)
 
-  const json = await embeddingResp.json()
-  return json.results.embeddings[0] as number[][]
+      const embeddingResp = await axios.post(embeddingsUrl, {
+        paragraphs: [chunk],
+      })
+
+      const json = embeddingResp.data
+      const results = json.results.embeddings as number[][]
+      allResults = allResults.concat(results)
+      console.log("batch complete", i)
+    }
+  )
+  return allResults.flat()
 }
 
 const docKey = "hp-2"
