@@ -1,9 +1,15 @@
 import { ErrorType } from "@/data/firebaseObsBuilders/fbWriter"
 import { DocumentJob, DocumentJobFile } from "@/data/types/DocumentJob"
 import { buildErrorOrLabelText } from "@/page_helpers/mui/buildErrorOrLabelText"
-import { FormControl, FormHelperText, Input, InputLabel } from "@mui/material"
+import {
+  Button,
+  FormControl,
+  FormHelperText,
+  Input,
+  InputLabel,
+} from "@mui/material"
 import React from "react"
-import { UploadFileComponent } from "./FileUploadComponent"
+import { UploadFileComponent } from "./UploadFileComponent"
 
 type DocTextInputsProps = {
   currentData: DocumentJob
@@ -14,6 +20,7 @@ type DocTextInputsProps = {
   errors: ErrorType<DocumentJob>
   header: string
   langNumber: number
+  userId: string
 }
 
 export const DocTextInputs = ({
@@ -22,6 +29,7 @@ export const DocTextInputs = ({
   errors,
   header,
   langNumber,
+  userId,
 }: DocTextInputsProps) => {
   const jobStarted = !!currentData.startJob
 
@@ -42,6 +50,7 @@ export const DocTextInputs = ({
             docKey={currentData.uid}
             langId={langNumber.toString()}
             onFile={(file) => updateField(langFileKey, file)}
+            userId={userId}
           ></UploadFileComponent>
         </div>
       </div>

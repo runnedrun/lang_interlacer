@@ -1,6 +1,6 @@
 import { DocumentJobFile } from "@/data/types/DocumentJob"
 import { getStorage, uploadBytes } from "@firebase/storage"
-import { Button, CircularProgress } from "@mui/material"
+import { Button, CircularProgress, Tooltip } from "@mui/material"
 import { getDownloadURL, ref } from "firebase/storage"
 import React, { useState } from "react"
 
@@ -11,11 +11,13 @@ export const UploadFileComponent = ({
   onFile,
   langId,
   docKey,
+  userId,
 }: {
   file: DocumentJobFile
   onFile: (url: DocumentJobFile) => void
   docKey: string
   langId: string
+  userId: string
 }) => {
   const [uploading, setUploading] = useState(false)
 
@@ -40,9 +42,26 @@ export const UploadFileComponent = ({
         {uploading ? <CircularProgress size=".5rem"></CircularProgress> : null}
       </div>
       <label htmlFor={`upload-file-${langId}`}>
-        <Button variant="contained" color="info" component="span">
-          {file ? file.name : "Upload a .txt file"}
-        </Button>
+        {userId ? (
+          <Tooltip title="File format: .txt">
+            <Button variant="contained" color="info" component="span">
+              {file ? file.name : "Upload file"}
+            </Button>
+          </Tooltip>
+        ) : (
+          <Tooltip title="File upload only available to logged in users. Sign in or create an account.">
+            <span>
+              <Button
+                variant="contained"
+                color="info"
+                component="span"
+                disabled
+              >
+                Upload file
+              </Button>
+            </span>
+          </Tooltip>
+        )}
         <input
           accept=".txt"
           id={`upload-file-${langId}`}
