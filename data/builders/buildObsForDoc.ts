@@ -1,7 +1,6 @@
 import { CollectionModels } from "@/data/firebaseObsBuilders/CollectionModels"
 import { collection, doc } from "firebase/firestore"
 import { cloneDeep, isEqual } from "lodash"
-import { doc as rxDoc } from "rxfire/firestore"
 import {
   BehaviorSubject,
   filter,
@@ -19,6 +18,7 @@ import { ObsOrValue } from "../types/ObsOrValue"
 import { buildCachedSwitchMap, Cache } from "./buildCachedSwitchMap"
 import { buildConverterForType } from "./buildConverterForType"
 import { buildNoOpCache } from "./buildNoOpCache"
+import { fromFbRef } from "./fromFbRef"
 
 type PossibleString = null | string | undefined
 
@@ -49,7 +49,7 @@ export const buildObsForDoc = <
         } else {
           const docRef = doc(collection(db, collectionName), stringId)
           const convertedDoc = docRef.withConverter(buildConverterForType<M>())
-          const newListener = rxDoc(convertedDoc).pipe(
+          const newListener = fromFbRef(convertedDoc).pipe(
             startWith(undefined),
             pairwise(),
             filter(([prev, current]) => {
