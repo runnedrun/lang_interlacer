@@ -8,7 +8,7 @@ import { isServerside } from "@/helpers/isServerside"
 import { objKeys } from "@/helpers/objKeys"
 import { toTitleCase } from "@/helpers/toTitleCase"
 import { get, isUndefined, merge } from "lodash"
-import { AuthAction, withAuthUser } from "next-firebase-auth"
+import { AuthAction, useAuthUser, withAuthUser } from "next-firebase-auth"
 import { useRouter } from "next/router"
 import words from "random-words"
 import React, { createContext, useContext, useMemo } from "react"
@@ -53,6 +53,7 @@ type PossiblePrefetchData<PrefetchType extends Record<string, any>> = {
 
 type ComponentContext = {
   host: string
+  userId: string
 }
 
 type RenderFn<MapToResolve extends Record<any, any>> = (
@@ -186,12 +187,15 @@ export function component<MapToResolve extends Record<any, any>>(
           ? withAuthUser({
               whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
               whenUnauthedAfterInit: AuthAction.RENDER,
-              // If instead you want to redirect to the sign in page on the first visit and after logging out
-              // whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN,
             })(ChildComponent as any)
           : ChildComponent
       ) as typeof ChildComponent
     }, [props?.context?.requiresUser])
+
+    // clientInitialized is false on the server and false at first on the client until firebase loads
+    // use the SSRprops generated userId until firebase is initialized in the client
+    const user = props?.context?.hasAuthentication ? useAuthUser() : null
+    const userId = user?.clientInitialized ? user.id : props?.context?.userId
 
     const getComponentPropsWithDefault = () => {
       const resolvedDataInputsAndSetters = getInputsAndValuesFromMapToResolve(
@@ -218,11 +222,12 @@ export function component<MapToResolve extends Record<any, any>>(
     const getComponentContextNoSSR = () => {
       return {
         host: typeof window === "undefined" ? null : window.location.hostname,
+        userId,
       }
     }
 
     if (props.cache) {
-      const componentContext = { host: props.context.host }
+      const componentContext = { host: props.context.host, userId }
       const dataCache = useMemo(() => hydrateTimestamps(props.cache), [])
 
       attachPrefetchCacheToAllObs(dataCache)

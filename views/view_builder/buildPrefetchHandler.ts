@@ -19,6 +19,8 @@ import { queryObsCacheName } from "./queryObs"
 export type RequestContext = {
   host: string
   requiresUser?: boolean
+  userId: string
+  hasAuthentication: boolean
 }
 
 export type PrefetchFnType<MapToResolve extends Record<any, any>> = (
@@ -80,7 +82,7 @@ export function buildPrefetchHandler<MapToResolve extends Record<any, any>>(
     const contextForProcessor = {
       query: context.query,
       props: {
-        userId: context.AuthUser.id,
+        userId: context.AuthUser?.id,
       },
     }
 
@@ -121,6 +123,8 @@ export function buildPrefetchHandler<MapToResolve extends Record<any, any>>(
         context: {
           host: context.req.headers.host as string,
           requiresUser: false,
+          userId: context.AuthUser?.id || null,
+          hasAuthentication: !!context.AuthUser,
         },
       },
     }

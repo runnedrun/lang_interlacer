@@ -89,7 +89,7 @@ const dataFunc = () => {
       return data
     },
   })
-  return { ...writer, userId: prop("userId", undefined as string) }
+  return { ...writer }
 }
 
 type StepCompleteFn = (docJob: DocumentJob) => Boolean
@@ -133,7 +133,7 @@ const NewDocView = component(
     updateField,
     writeResults: { currentData, errors },
     setEditingStateOverride,
-    userId,
+    _context: { userId },
   }) => {
     const jobStarted = !!currentData.startJob
 
@@ -149,11 +149,6 @@ const NewDocView = component(
         </Button>
       </div>
     )
-
-    // clientInitialized is false on the server and false at first on the client until firebase loads
-    // use the SSRprops generated userId until firebase is initialized in the client
-    const user = useAuthUser()
-    userId = user.clientInitialized ? user.id : userId
 
     return (
       <div className="w-full flex justify-center">
