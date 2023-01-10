@@ -16,6 +16,7 @@
     "paths": {
       "@/*": ["./*"]
     },
+    "types": ["jest"],
     // "strict": true
     "strict": false,
     "incremental": true

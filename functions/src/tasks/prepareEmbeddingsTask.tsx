@@ -16,13 +16,13 @@ export const prepareEmbeddings = async ({
 }: PrepareEmbeddingsTask) => {
   console.log("Preparing embeddings for docId", docId)
 
-  const [
-    lang1SentencesEmbeddings,
-    lang2SentencesEmbeddings,
-  ] = await Promise.all([
-    getEmbeddings(lang1Sentences),
-    getEmbeddings(lang2Sentences),
-  ])
+  const [lang1SentencesEmbeddings, lang2SentencesEmbeddings] =
+    await Promise.all([
+      getEmbeddings(lang1Sentences),
+      getEmbeddings(lang2Sentences),
+    ])
+
+  console.log("SAVING EMBEDDINGS")
 
   await Promise.all([
     saveEmbeddingsAndParagraphs(
@@ -46,16 +46,19 @@ export const prepareEmbeddings = async ({
   console.log("embedding prep complete")
 }
 
-export const prepareEmbeddingsTask = functions.tasks
-  .taskQueue({
+export const prepareEmbeddingsTask = functions
+  .runWith({
+    timeoutSeconds: 540,
+  })
+  .tasks.taskQueue({
     retryConfig: {
-      maxAttempts: 5,
+      maxAttempts: 2,
       minBackoffSeconds: 30,
     },
     rateLimits: {
-      maxConcurrentDispatches: 10,
+      maxConcurrentDispatches: 2,
     },
   })
   .onDispatch(async (data) => {
-    prepareEmbeddings(data as PrepareEmbeddingsTask)
+    return prepareEmbeddings(data as PrepareEmbeddingsTask)
   })

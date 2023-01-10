@@ -1,22 +1,14 @@
+import { CollectionModels } from "@/data/firebaseObsBuilders/CollectionModels"
 import {
   collection,
   query as buildQuery,
   QueryConstraint,
 } from "firebase/firestore"
-import { buildConverterForType } from "./buildConverterForType"
-import { collectionData, collection as rxCollection } from "rxfire/firestore"
-import {
-  combineLatest,
-  isObservable,
-  map,
-  mergeMap,
-  of,
-  switchMap,
-  tap,
-} from "rxjs"
-import { ObsOrValue } from "../types/ObsOrValue"
-import { CollectionModels } from "@/data/firebaseObsBuilders/CollectionModels"
+import { combineLatest, isObservable, of, switchMap } from "rxjs"
 import { init } from "../initFb"
+import { ObsOrValue } from "../types/ObsOrValue"
+import { buildConverterForType } from "./buildConverterForType"
+import { collectionData } from "./obsFromFbCollection"
 
 export const buildObsForCollection = <
   CollectionName extends keyof CollectionModels,

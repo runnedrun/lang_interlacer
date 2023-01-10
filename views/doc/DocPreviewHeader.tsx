@@ -66,7 +66,7 @@ export const DocPreviewHeader = component(
     }
 
     return (
-      <div className="w-full flex">
+      <div className="flex w-full">
         <div className="flex-grow">
           <TabContext value={selectedTab}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>

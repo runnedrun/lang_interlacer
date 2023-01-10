@@ -120,7 +120,7 @@ export function buildPrefetchHandler<MapToResolve extends Record<any, any>>(
         cache: cleanCache,
         context: {
           host: context.req.headers.host as string,
-          requiresUser: !!context.AuthUser,
+          requiresUser: false,
         },
       },
     }

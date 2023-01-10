@@ -30,6 +30,10 @@ export const buildActionButtonFromSpec = <
       label={action.label}
       onClick={runAction}
       showInMenu={true}
+      icon={action.icon as any}
+      onResize={() => {}}
+      onResizeCapture={() => {}}
+      nonce=""
     />
   )
 

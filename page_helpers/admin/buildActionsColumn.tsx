@@ -21,11 +21,15 @@ export const buildActionsColumn = <
     type: "actions",
     getActions: (params: GridRowParams<CollectionModels[CollectionName]>) => [
       <GridActionsCellItem
+        key="delete"
         icon={<Delete />}
         label="Delete"
         onClick={() => {
           archiveDoc[collectionName](String(params.id))
         }}
+        onResize={() => {}}
+        onResizeCapture={() => {}}
+        nonce=""
       />,
       ...getOtherActions(params),
     ],
