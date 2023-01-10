@@ -56,7 +56,7 @@ export const prepareEmbeddingsTask = functions
       minBackoffSeconds: 30,
     },
     rateLimits: {
-      maxConcurrentDispatches: 10,
+      maxConcurrentDispatches: 2,
     },
   })
   .onDispatch(async (data) => {
