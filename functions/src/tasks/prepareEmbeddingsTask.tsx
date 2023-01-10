@@ -49,14 +49,15 @@ export const prepareEmbeddings = async ({
 export const prepareEmbeddingsTask = functions
   .runWith({
     timeoutSeconds: 540,
+    memory: "2GB",
   })
   .tasks.taskQueue({
     retryConfig: {
-      maxAttempts: 2,
+      maxAttempts: 1,
       minBackoffSeconds: 30,
     },
     rateLimits: {
-      maxConcurrentDispatches: 2,
+      maxConcurrentDispatches: 1,
     },
   })
   .onDispatch(async (data) => {

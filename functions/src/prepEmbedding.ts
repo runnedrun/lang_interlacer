@@ -8,6 +8,16 @@ import { generateRawParagraphKey } from "./helpers/generateRawParagraphKey"
 import { chinese, english } from "./helpers/hp"
 import { fbSet } from "./helpers/writer"
 import axios from "axios"
+import axiosRetry from "axios-retry"
+
+axiosRetry(axios, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error) => {
+    console.log("CHECKING FOR RETRY", error.status)
+    return error.status === 429 || error.status === 500 || error.status === 503
+  },
+})
 
 const nlp = wink(winkModel)
 
@@ -104,7 +114,7 @@ export const getEmbeddings = async (sentences: string[]) => {
       console.log("batch complet1e", i)
     }
   )
-  console.log("FINISHED EMBEDDINGS for", chunked.length, "sentences")
+  console.log("FINISHED EMBEDDINGS for", chunked.length, "chunks")
   return allResults.flat()
 }
 
@@ -151,13 +161,11 @@ const prepEmbeddingFn = async (lang1Text: string, lang2Text: string) => {
     getSents(lang2Text),
   ])
 
-  const [
-    lang1SentencesEmbeddings,
-    lang2SentencesEmbeddings,
-  ] = await Promise.all([
-    getEmbeddings(lang1SentencesSplit),
-    getEmbeddings(lang2SentencesSplit),
-  ])
+  const [lang1SentencesEmbeddings, lang2SentencesEmbeddings] =
+    await Promise.all([
+      getEmbeddings(lang1SentencesSplit),
+      getEmbeddings(lang2SentencesSplit),
+    ])
 
   await Promise.all([
     saveEmbeddingsAndParagraphs(

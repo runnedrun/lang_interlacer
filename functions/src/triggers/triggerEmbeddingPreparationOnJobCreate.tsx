@@ -54,7 +54,7 @@ export const triggerEmbeddingPreparationOnJobCreate = functions
     )
 
     const jobStarted =
-      currentJobTimestamp && !currentJobTimestamp.isEqual(lastJobTimestamp)
+      newData?.startJob && !currentJobTimestamp.isEqual(lastJobTimestamp)
 
     const translationComplete =
       !oldData?.lang2SentenceFile &&

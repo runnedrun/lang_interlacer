@@ -49,8 +49,11 @@ export const translateText = async (data: TranslateTextTaskData) => {
   console.log("translation job complete")
 }
 
-export const translateTextTask = functions.tasks
-  .taskQueue({
+export const translateTextTask = functions
+  .runWith({
+    timeoutSeconds: 540,
+  })
+  .tasks.taskQueue({
     retryConfig: {
       maxAttempts: 1,
       minBackoffSeconds: 30,

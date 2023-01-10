@@ -14,8 +14,11 @@ const joinSentences = (sentences: FinalizedSentence[]) =>
     .filter(Boolean)
     .join(" ")
 
-export const triggerEpubCreationForDocJob = functions.firestore
-  .document("documentJob/{docId}")
+export const triggerEpubCreationForDocJob = functions
+  .runWith({
+    timeoutSeconds: 540,
+  })
+  .firestore.document("documentJob/{docId}")
   .onWrite(async (change) => {
     const before = change.before?.data() as DocumentJob
     const after = change.after?.data() as DocumentJob
