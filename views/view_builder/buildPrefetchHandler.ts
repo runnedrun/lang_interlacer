@@ -79,7 +79,9 @@ export function buildPrefetchHandler<MapToResolve extends Record<any, any>>(
 
     const contextForProcessor = {
       query: context.query,
-      props: {},
+      props: {
+        userId: context.AuthUser.id,
+      },
     }
 
     const processedArgs = processServersideSpecialArgs(
