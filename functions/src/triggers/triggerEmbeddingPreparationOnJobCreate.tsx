@@ -53,23 +53,27 @@ export const triggerEmbeddingPreparationOnJobCreate = functions
       newData.startJob?.nanoseconds || 0
     )
 
-    const jobStarted = !currentJobTimestamp.isEqual(lastJobTimestamp)
+    const jobStarted =
+      currentJobTimestamp && !currentJobTimestamp.isEqual(lastJobTimestamp)
+
+    const translationComplete =
+      !oldData?.lang2SentenceFile &&
+      newData.lang2SentenceFile &&
+      !newData.lang2Text
 
     console.log(
       "start",
       jobStarted,
       currentJobTimestamp.seconds,
-      lastJobTimestamp.seconds
+      lastJobTimestamp.seconds,
+      translationComplete
     )
-
-    const translationComplete =
-      !oldData?.lang2SentenceFile && newData.lang2SentenceFile
 
     if (!(jobStarted || translationComplete)) {
       return
     }
 
-    console.log("lang", newData.targetLanguage)
+    console.log("running job for id", change.after.id)
 
     const lang1TextPromise = newData.lang1File?.url
       ? axios.get(newData.lang1File?.url).then((_) => _.data)
