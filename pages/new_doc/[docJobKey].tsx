@@ -24,6 +24,7 @@ import {
 } from "@mui/material"
 import {
   AuthAction,
+  useAuthUser,
   withAuthUser,
   withAuthUserTokenSSR,
 } from "next-firebase-auth"
@@ -149,6 +150,11 @@ const NewDocView = component(
       </div>
     )
 
+    // clientInitialized is false on the server and false at first on the client until firebase loads
+    // use the SSRprops generated userId until firebase is initialized in the client
+    const user = useAuthUser()
+    userId = user.clientInitialized ? user.id : userId
+
     return (
       <div className="w-full flex justify-center">
         <div className="md:w-2/3 md:p-0 px-2 justify-center max-w-3xl">
@@ -244,6 +250,4 @@ export const getServerSideProps = withAuthUserTokenSSR()(async (context) => {
   return { props: { ...props, userId: context.AuthUser.id } }
 })
 
-export default withAuthUser({ whenUnauthedBeforeInit: AuthAction.SHOW_LOADER })(
-  NewDocView
-)
+export default withAuthUser({})(NewDocView)
