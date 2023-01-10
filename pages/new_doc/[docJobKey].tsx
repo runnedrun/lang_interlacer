@@ -20,8 +20,14 @@ import {
   LinearProgress,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
 } from "@mui/material"
-import { withAuthUser, withAuthUserTokenSSR } from "next-firebase-auth"
+import {
+  AuthAction,
+  useAuthUser,
+  withAuthUser,
+  withAuthUserTokenSSR,
+} from "next-firebase-auth"
 import React from "react"
 
 const TranslationDescription = ({
@@ -83,7 +89,7 @@ const dataFunc = () => {
       return data
     },
   })
-  return { ...writer, userId: prop("userId", undefined as string) }
+  return { ...writer }
 }
 
 type StepCompleteFn = (docJob: DocumentJob) => Boolean
@@ -127,7 +133,7 @@ const NewDocView = component(
     updateField,
     writeResults: { currentData, errors },
     setEditingStateOverride,
-    userId,
+    _context: { userId },
   }) => {
     const jobStarted = !!currentData.startJob
 
@@ -153,20 +159,29 @@ const NewDocView = component(
             <div className="flex flex-col items-center mb-5">
               <div className="flex mb-5">
                 <FormControl disabled={jobStarted}>
-                  <ToggleButtonGroup
-                    color="primary"
-                    value={!!currentData.generateTranslation}
-                    exclusive
-                    onChange={(_, value) =>
-                      updateField("generateTranslation", value)
+                  <Tooltip
+                    title={
+                      userId
+                        ? ""
+                        : "Anonymous users can only use their own translation. Sign in or create an account to use our translation."
                     }
-                    aria-label="Platform"
                   >
-                    <ToggleButton value={false}>
-                      Use my translation
-                    </ToggleButton>
-                    <ToggleButton value={true}>Translate for me</ToggleButton>
-                  </ToggleButtonGroup>
+                    <ToggleButtonGroup
+                      color={userId ? "primary" : "standard"}
+                      value={!!currentData.generateTranslation}
+                      exclusive
+                      onChange={(_, value) =>
+                        updateField("generateTranslation", value)
+                      }
+                      disabled={userId ? false : true}
+                      aria-label="Platform"
+                    >
+                      <ToggleButton value={false}>
+                        Use my translation
+                      </ToggleButton>
+                      <ToggleButton value={true}>Translate for me</ToggleButton>
+                    </ToggleButtonGroup>
+                  </Tooltip>
                 </FormControl>
               </div>
               <div className="max-w-sm">
@@ -204,6 +219,7 @@ const NewDocView = component(
               header={`Paste in up to 10,000 characters of text in any language`}
               updateField={updateField}
               langNumber={1}
+              userId={userId}
             ></DocTextInputs>
 
             {!currentData.generateTranslation && (
@@ -213,6 +229,7 @@ const NewDocView = component(
                 header={`Paste the translation of the text above in any other language`}
                 updateField={updateField}
                 langNumber={2}
+                userId={userId}
               ></DocTextInputs>
             )}
             {bottomBar}
@@ -228,4 +245,4 @@ export const getServerSideProps = withAuthUserTokenSSR()(async (context) => {
   return { props: { ...props, userId: context.AuthUser.id } }
 })
 
-export default withAuthUser()(NewDocView)
+export default withAuthUser({})(NewDocView)
