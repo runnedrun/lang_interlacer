@@ -46,10 +46,13 @@ export const prepareEmbeddings = async ({
   console.log("embedding prep complete")
 }
 
-export const prepareEmbeddingsTask = functions.tasks
-  .taskQueue({
+export const prepareEmbeddingsTask = functions
+  .runWith({
+    timeoutSeconds: 540,
+  })
+  .tasks.taskQueue({
     retryConfig: {
-      maxAttempts: 5,
+      maxAttempts: 2,
       minBackoffSeconds: 30,
     },
     rateLimits: {
