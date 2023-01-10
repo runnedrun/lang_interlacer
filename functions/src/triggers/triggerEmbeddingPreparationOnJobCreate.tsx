@@ -34,8 +34,11 @@ const startTranslationTask = (data: TranslateTextTaskData) => {
   }
 }
 
-export const triggerEmbeddingPreparationOnJobCreate = functions.firestore
-  .document("documentJob/{docId}")
+export const triggerEmbeddingPreparationOnJobCreate = functions
+  .runWith({
+    timeoutSeconds: 540,
+  })
+  .firestore.document("documentJob/{docId}")
   .onWrite(async (change) => {
     const oldData = change.before.data() as DocumentJob
     const newData = change.after.data() as DocumentJob
