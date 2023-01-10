@@ -83,25 +83,25 @@ const buildColumnDefs = <
     .filter(Boolean)
 }
 
-const buildDataGridRowsAndCols = <
-  FieldDisplaySpecType extends FieldDisplayComponents<any, any>
->(
-  adminDisplaySpecs: FieldDisplays<FieldDisplaySpecType>
-) => (data: ModelFromFieldDisplayComponents<FieldDisplaySpecType>[]) => {
-  return {
-    buildRows: () => {
-      return data.map((model) => {
-        return {
-          ...model,
-          id: model.uid,
-        }
-      })
-    },
-    buildCols: () => {
-      return buildColumnDefs(adminDisplaySpecs)
-    },
+const buildDataGridRowsAndCols =
+  <FieldDisplaySpecType extends FieldDisplayComponents<any, any>>(
+    adminDisplaySpecs: FieldDisplays<FieldDisplaySpecType>
+  ) =>
+  (data: ModelFromFieldDisplayComponents<FieldDisplaySpecType>[]) => {
+    return {
+      buildRows: () => {
+        return data.map((model) => {
+          return {
+            ...model,
+            id: model.uid,
+          }
+        })
+      },
+      buildCols: () => {
+        return buildColumnDefs(adminDisplaySpecs)
+      },
+    }
   }
-}
 
 // type HydrationMapFromHydratedValue<
 //   Value extends AnyGenericModel & { hydated?: any }
@@ -109,22 +109,19 @@ const buildDataGridRowsAndCols = <
 //   ? HydrationMap
 //   : {}
 
-export type SingleEditableFieldComponent<
-  FieldType extends any
-> = React.ComponentType<SingleFieldEditableProps<FieldType>>
+export type SingleEditableFieldComponent<FieldType extends any> =
+  React.ComponentType<SingleFieldEditableProps<FieldType>>
 
-export type ControlComponentsMapFromArgs<
-  ArgsType extends Record<string, any>
-> = {
-  [key in keyof FilterNotTypeConditionally<
-    ArgsType,
-    ReadOnlyArg<any>
-  >]: SingleEditableFieldComponent<ArgsType[key]>
-}
+export type ControlComponentsMapFromArgs<ArgsType extends Record<string, any>> =
+  {
+    [key in keyof FilterNotTypeConditionally<
+      ArgsType,
+      ReadOnlyArg<any>
+    >]: SingleEditableFieldComponent<ArgsType[key]>
+  }
 
-export type FieldDisplayFromModel<
-  ModelType extends Record<string, any>
-> = FieldDisplay<FieldDisplayComponents<Model<any, ModelType>, any>>
+export type FieldDisplayFromModel<ModelType extends Record<string, any>> =
+  FieldDisplay<FieldDisplayComponents<Model<any, ModelType>, any>>
 
 export type FieldDisplayFromRowsObservable<
   Obs extends ParamaterizedObservable<any, AnyGenericModel[], any>
@@ -137,112 +134,118 @@ export type FieldDisplayFromRowsObservable<
 
 const DataGridHeader = () => (
   <GridToolbarContainer>
-    <GridToolbarColumnsButton />
+    <GridToolbarColumnsButton
+      onResize={() => {}}
+      onResizeCapture={() => {}}
+      nonce=""
+    />
     {/* <GridToolbarExport /> */}
   </GridToolbarContainer>
 )
 
-export const buildDataGridForSpec: DocumentDisplayBuilder<{}> = (
-  collectionNameForEdits,
-  dataObsFn
-) => (adminDisplaySpecs, options): React.ComponentType => {
-  const buildRowsAndColsBuilders = buildDataGridRowsAndCols(adminDisplaySpecs)
-  const finalDataObsFn = (id: string) => ({
-    data: dataObsFn(id),
-  })
+export const buildDataGridForSpec: DocumentDisplayBuilder<{}> =
+  (collectionNameForEdits, dataObsFn) =>
+  (adminDisplaySpecs, options): React.ComponentType => {
+    const buildRowsAndColsBuilders = buildDataGridRowsAndCols(adminDisplaySpecs)
+    const finalDataObsFn = (id: string) => ({
+      data: dataObsFn(id),
+    })
 
-  const GridComponent = component(
-    finalDataObsFn,
-    ({ isLoading, data, ...controlsValuesAndSetters }) => {
-      const typed = (data as unknown) as ModelFromFieldDisplayComponents<
-        FieldDisplayComponents<
-          ValueTypeFromArrayParamObs<ReturnType<typeof dataObsFn>>,
-          any
-        >
-      >[]
+    const GridComponent = component(
+      finalDataObsFn,
+      ({ isLoading, data, ...controlsValuesAndSetters }) => {
+        const typed = data as unknown as ModelFromFieldDisplayComponents<
+          FieldDisplayComponents<
+            ValueTypeFromArrayParamObs<ReturnType<typeof dataObsFn>>,
+            any
+          >
+        >[]
 
-      const { buildCols, buildRows } = buildRowsAndColsBuilders(typed)
+        const { buildCols, buildRows } = buildRowsAndColsBuilders(typed)
 
-      const router = useRouter()
+        const router = useRouter()
 
-      const cols = useMemo(() => {
-        const cols = buildCols()
-        if (options.columnActions.length) {
-          const columnActionsCol = buildActionsCol(
-            collectionNameForEdits,
-            options.columnActions,
-            router
-          )
-          cols.push(columnActionsCol)
-        }
-
-        return cols
-      }, [])
-
-      const rows = buildRows()
-
-      const initialStateSortObj = options?.defaultSort
-        ? {
-            sorting: {
-              sortModel: [
-                {
-                  field: options?.defaultSort.column,
-                  sort: options?.defaultSort.direction,
-                },
-              ],
-            },
+        const cols = useMemo(() => {
+          const cols = buildCols()
+          if (options.columnActions.length) {
+            const columnActionsCol = buildActionsCol(
+              collectionNameForEdits,
+              options.columnActions,
+              router
+            )
+            cols.push(columnActionsCol)
           }
-        : {}
 
-      return (
-        <DataGrid
-          loading={isLoading}
-          components={{
-            Toolbar: DataGridHeader,
-          }}
-          // componentsProps={componentProps}
-          processRowUpdate={(row, oldRow) => {
-            const oldClone = cloneDeep(oldRow)
-            const newClone = cloneDeep(row)
+          return cols
+        }, [])
 
-            if (options.updateHydratedFields) {
-              updateHydratedValues(
-                options.updateHydratedFields,
-                newClone,
-                oldClone
-              )
+        const rows = buildRows()
+
+        const initialStateSortObj = options?.defaultSort
+          ? {
+              sorting: {
+                sortModel: [
+                  {
+                    field: options?.defaultSort.column,
+                    sort: options?.defaultSort.direction,
+                  },
+                ],
+              },
             }
+          : {}
 
-            delete (newClone as any).hydrated
-            setters[collectionNameForEdits](row.uid, row as any)
+        return (
+          <DataGrid
+            loading={isLoading}
+            components={{
+              Toolbar: DataGridHeader,
+            }}
+            // componentsProps={componentProps}
+            processRowUpdate={(row, oldRow) => {
+              const oldClone = cloneDeep(oldRow)
+              const newClone = cloneDeep(row)
 
-            return row
-          }}
-          getRowHeight={() => "auto"}
-          experimentalFeatures={{ newEditingApi: true }}
-          rows={rows}
-          columns={cols}
-          checkboxSelection={true}
-          disableSelectionOnClick
-          onSelectionModelChange={(newSelectionModel) => {
-            options?.onSelect(newSelectionModel.map((_) => String(_)))
-          }}
-          // selectionModel={selectionModel}
-          onCellEditStop={(params, event) => {
-            if (params.reason === GridCellEditStopReasons.enterKeyDown) {
-              return (event.defaultMuiPrevented = true)
-            }
-          }}
-          initialState={{ ...initialStateSortObj } as any}
-          {...options}
-          sx={{
-            "& .MuiDataGrid-actionsCell": { display: "flex", flexWrap: "wrap" },
-            "& .MuiDataGrid-cell": { p: "8px" },
-          }}
-        />
-      )
-    }
-  )
+              if (options.updateHydratedFields) {
+                updateHydratedValues(
+                  options.updateHydratedFields,
+                  newClone,
+                  oldClone
+                )
+              }
 
-  return GridComponent
-}
+              delete (newClone as any).hydrated
+              setters[collectionNameForEdits](row.uid, row as any)
+
+              return row
+            }}
+            getRowHeight={() => "auto"}
+            experimentalFeatures={{ newEditingApi: true }}
+            rows={rows}
+            columns={cols}
+            checkboxSelection={true}
+            disableSelectionOnClick
+            onSelectionModelChange={(newSelectionModel) => {
+              options?.onSelect(newSelectionModel.map((_) => String(_)))
+            }}
+            // selectionModel={selectionModel}
+            onCellEditStop={(params, event) => {
+              if (params.reason === GridCellEditStopReasons.enterKeyDown) {
+                return (event.defaultMuiPrevented = true)
+              }
+            }}
+            initialState={{ ...initialStateSortObj } as any}
+            {...options}
+            sx={{
+              "& .MuiDataGrid-actionsCell": {
+                display: "flex",
+                flexWrap: "wrap",
+              },
+              "& .MuiDataGrid-cell": { p: "8px" },
+            }}
+          />
+        )
+      }
+    )
+
+    return GridComponent
+  }
