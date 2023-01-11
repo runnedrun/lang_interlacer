@@ -80,7 +80,7 @@ export function buildPrefetchHandler<MapToResolve extends Record<any, any>>(
     const contextForProcessor = {
       query: context.query,
       props: {
-        userId: context.AuthUser.id,
+        userId: context.AuthUser?.id,
       },
     }
 

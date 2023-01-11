@@ -10,12 +10,16 @@ import { fbSet } from "./helpers/writer"
 import axios from "axios"
 import axiosRetry from "axios-retry"
 
+console.log("USING AXIOS RETRY")
 axiosRetry(axios, {
   retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
     console.log("CHECKING FOR RETRY", error.status)
-    return error.status === 429 || error.status === 500 || error.status === 503
+    return true
+  },
+  onRetry: (error) => {
+    console.log("RETRYGIN!")
   },
 })
 
@@ -97,7 +101,7 @@ export const getSents = async (text: string) => {
 
 export const getEmbeddings = async (sentences: string[]) => {
   const chunked = chunk(sentences, 150)
-  let allResults = []
+  const allChunkResults = []
   await batchPromises(
     2,
     Array.from(chunked.entries()),
@@ -110,12 +114,12 @@ export const getEmbeddings = async (sentences: string[]) => {
 
       const json = embeddingResp.data
       const results = json.results.embeddings as number[][]
-      allResults = allResults.concat(results)
+      allChunkResults[i] = results
       console.log("batch complet1e", i)
     }
   )
   console.log("FINISHED EMBEDDINGS for", chunked.length, "chunks")
-  return allResults.flat()
+  return allChunkResults.flat()
 }
 
 const docKey = "hp-2"

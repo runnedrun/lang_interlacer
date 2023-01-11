@@ -17,6 +17,7 @@ const joinSentences = (sentences: FinalizedSentence[]) =>
 export const triggerEpubCreationForDocJob = functions
   .runWith({
     timeoutSeconds: 540,
+    memory: "4GB",
   })
   .firestore.document("documentJob/{docId}")
   .onWrite(async (change) => {

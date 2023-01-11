@@ -29,7 +29,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
       },
       {
         orderBy: {
-          chunkIndex: staticValue("desc" as OrderByDirection),
+          chunkIndex: staticValue("asc" as OrderByDirection),
         },
         limit: staticValue(10),
       }
@@ -42,7 +42,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
       },
       {
         orderBy: {
-          chunkIndex: staticValue("desc" as OrderByDirection),
+          chunkIndex: staticValue("asc" as OrderByDirection),
         },
         limit: staticValue(10),
       }
@@ -89,13 +89,13 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
   ]
 
   return (
-    <div className="w-full flex justify-center mt-5">
+    <div className="mt-5 flex w-full justify-center">
       {isLoading && (
-        <div className="absolute h-screen w-screen flex justify-center items-center">
+        <div className="absolute flex h-screen w-screen items-center justify-center">
           <CircularProgress size="4rem" />
         </div>
       )}
-      <div className="md:w-2/3 md:p-0 max-w-2xl px-5 h-screen flex flex-col">
+      <div className="flex h-screen max-w-2xl flex-col px-5 md:w-2/3 md:p-0">
         <DocPreviewHeader docKey={docKey} languages={languages} />
         <div className="overflow-auto">
           <ChunksDisplay chunks={chunks} />
