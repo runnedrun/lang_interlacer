@@ -78,6 +78,8 @@ export const compareSelections = (
   })
 }
 
+console.log("test")
+
 const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
   if (!chunks) {
     return <ErrorPage statusCode={404}></ErrorPage>
