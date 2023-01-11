@@ -31,7 +31,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         orderBy: {
           chunkIndex: staticValue("asc" as OrderByDirection),
         },
-        limit: staticValue(10),
+        limit: staticValue(5),
       }
     ),
     filtered(
@@ -44,7 +44,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         orderBy: {
           chunkIndex: staticValue("asc" as OrderByDirection),
         },
-        limit: staticValue(10),
+        limit: staticValue(5),
       }
     ),
     docForKey("documentJob", param).pipe(
@@ -77,8 +77,6 @@ export const compareSelections = (
     )
   })
 }
-
-console.log("test")
 
 const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
   if (!chunks) {

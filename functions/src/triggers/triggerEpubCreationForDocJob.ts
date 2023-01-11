@@ -51,12 +51,10 @@ export const triggerEpubCreationForDocJob = functions
         ? `<div class="pinyin">${joinSentences(chunk.lang1Pronunciation)}</div>`
         : ""
 
-      const lang1El = `<div class="english">${joinSentences(
-        chunk.lang2
-      )}.</div>`
-      const lang2El = `<div class="hanzi">${joinSentences(chunk.lang1)}.</div>`
+      const lang1El = `<div class="english">${joinSentences(chunk.lang1)}</div>`
+      const lang2El = `<div class="hanzi">${joinSentences(chunk.lang2)}</div>`
 
-      return `<div class="pinyinAndEnglish">${pronunciationEl}${lang1El}${lang2El}</div>`
+      return `<div class="pinyinAndEnglish">${pronunciationEl}${lang2El}${lang1El}</div>`
     })
     const allHtml = sectionsForBook.join("</br>")
 
