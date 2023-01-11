@@ -1,8 +1,6 @@
-import axios from "axios"
+import admin from "firebase-admin"
 import { getSents } from "../prepEmbedding"
 import { fbSet } from "./writer"
-import admin from "firebase-admin"
-import { v4 as uuidv4 } from "uuid"
 
 const uploadTextFile = async (filename: string, fileContents: string) => {
   const bucket = admin.storage().bucket()

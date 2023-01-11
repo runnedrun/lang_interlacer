@@ -1,25 +1,21 @@
-import * as functions from "firebase-functions"
+import axios from "axios"
+import axiosRetry from "axios-retry"
 import batchPromises from "batch-promises"
 import { chunk } from "lodash"
-import fetch from "node-fetch"
 import winkModel from "wink-eng-lite-web-model"
 import wink from "wink-nlp"
 import { generateRawParagraphKey } from "./helpers/generateRawParagraphKey"
-import { chinese, english } from "./helpers/hp"
 import { fbSet } from "./helpers/writer"
-import axios from "axios"
-import axiosRetry from "axios-retry"
 
 console.log("USING AXIOS RETRY")
 axiosRetry(axios, {
   retries: 3,
   retryDelay: axiosRetry.exponentialDelay,
   retryCondition: (error) => {
-    console.log("CHECKING FOR RETRY", error.status)
     return true
   },
   onRetry: (error) => {
-    console.log("RETRYGIN!")
+    console.log("retrying!")
   },
 })
 
@@ -113,16 +109,14 @@ export const getEmbeddings = async (sentences: string[]) => {
       })
 
       const json = embeddingResp.data
-      const results = json.results.embeddings as number[][]
+      const results = json.results.embeddings[0] as number[][]
       allChunkResults[i] = results
-      console.log("batch complet1e", i)
+      console.log("batch complete:", i, "out of", chunked.length)
     }
   )
   console.log("FINISHED EMBEDDINGS for", chunked.length, "chunks")
   return allChunkResults.flat()
 }
-
-const docKey = "hp-2"
 
 export const saveEmbeddingsAndParagraphs = async (
   sentences: string[],
@@ -158,36 +152,3 @@ export const saveEmbeddingsAndParagraphs = async (
 const removeNewLines = (text: string) => {
   return text.replace(/(\r\n|\n|\r)/gm, " ")
 }
-
-const prepEmbeddingFn = async (lang1Text: string, lang2Text: string) => {
-  const [lang1SentencesSplit, lang2SentencesSplit] = await Promise.all([
-    getSents(lang1Text),
-    getSents(lang2Text),
-  ])
-
-  const [lang1SentencesEmbeddings, lang2SentencesEmbeddings] =
-    await Promise.all([
-      getEmbeddings(lang1SentencesSplit),
-      getEmbeddings(lang2SentencesSplit),
-    ])
-
-  await Promise.all([
-    saveEmbeddingsAndParagraphs(
-      lang1SentencesSplit,
-      lang1SentencesEmbeddings,
-      "1",
-      docKey
-    ),
-    saveEmbeddingsAndParagraphs(
-      lang2SentencesSplit,
-      lang2SentencesEmbeddings,
-      "2",
-      docKey
-    ),
-  ])
-}
-
-export const prepEmbedding = functions.https.onRequest(async (req, res) => {
-  await prepEmbeddingFn(english, chinese)
-  res.send("done")
-})

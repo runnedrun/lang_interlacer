@@ -1,4 +1,3 @@
-import { prepEmbedding } from "./prepEmbedding"
 import * as firebase from "firebase-admin/app"
 import "./fixTsPaths"
 import { triggerEmbeddingPreparationOnJobCreate } from "./triggers/triggerEmbeddingPreparationOnJobCreate"
@@ -18,7 +17,6 @@ import { triggerEpubCreationForDocJob } from "./triggers/triggerEpubCreationForD
 firebase.initializeApp()
 
 export {
-  prepEmbedding,
   prepareEmbeddingsTask,
   triggerEmbeddingPreparationOnJobCreate,
   translateTextTask,
