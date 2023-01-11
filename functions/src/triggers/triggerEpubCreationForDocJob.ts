@@ -66,8 +66,6 @@ export const triggerEpubCreationForDocJob = functions
       // cover: "fb_functions/books/cover.jpeg",
     }
 
-    console.log("writing epub", allHtml, options)
-
     const filename = `${docId}.epub`
 
     const epubBuffer = await epub(options, [

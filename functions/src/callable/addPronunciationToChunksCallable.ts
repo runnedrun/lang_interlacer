@@ -7,8 +7,10 @@ import {
   AddPronunciationToChunksInput,
 } from "../helpers/addPronunciationToChunks"
 
-export const addPronunciationToChunksCallable = functions.https.onCall(
-  async (data, context) => {
+export const addPronunciationToChunksCallable = functions
+  .runWith({
+    memory: "2GB",
+  })
+  .https.onCall(async (data, context) => {
     return addPronunciationToChunks(data as AddPronunciationToChunksInput)
-  }
-)
+  })

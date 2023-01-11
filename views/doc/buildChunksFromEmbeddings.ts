@@ -7,51 +7,58 @@ export const buildChunksFromEmbeddings = (
   lang1Paragraphs: RawParagraph[],
   lang2Paragraphs: RawParagraph[]
 ): Chunk[] => {
-  const allEnSentences = sortBy(
+  const allLang1Sentences = sortBy(
     lang1Paragraphs.flatMap((p) => p.sentences),
     "sentenceIndex"
   )
-  const allZhSentences = sortBy(
+  const allLang2Sentences = sortBy(
     lang2Paragraphs.flatMap((p) => p.sentences),
     "sentenceIndex"
   )
 
-  const path = matchSentences(allEnSentences, allZhSentences, 3)
+  const path = matchSentences(allLang1Sentences, allLang2Sentences, 3)
 
   const chunks = path.map((node) => {
-    const enForCluster = allEnSentences.slice(node.lang1.start, node.lang1.end)
-    const zhForCluster = allZhSentences.slice(node.lang2.start, node.lang2.end)
+    const lang1ForCluster = allLang1Sentences.slice(
+      node.lang1.start,
+      node.lang1.end
+    )
+
+    const lang2ForCluster = allLang2Sentences.slice(
+      node.lang2.start,
+      node.lang2.end
+    )
 
     return {
-      lang1: enForCluster,
-      lang2: zhForCluster,
+      lang1: lang1ForCluster,
+      lang2: lang2ForCluster,
       score: node.score,
     }
   })
 
-  const lastEnIndex = path[path.length - 1].lang1.end
+  const lastLang1Index = path[path.length - 1].lang1.end
 
-  const enSentsRemaining = allEnSentences.slice(lastEnIndex)
-  const extraEnCluster = enSentsRemaining.length
+  const lang1SentsRemaining = allLang1Sentences.slice(lastLang1Index)
+  const extraLang1Cluster = lang1SentsRemaining.length
     ? {
-        lang1: enSentsRemaining,
+        lang1: lang1SentsRemaining,
         lang2: [] as Sentence[],
         score: 0,
       }
     : null
 
-  const lastZhIndex = path[path.length - 1].lang2.end
-  const zhSentsRemaining = allZhSentences.slice(lastZhIndex)
-  const extraZhCluster = zhSentsRemaining.length
+  const lastLang2Index = path[path.length - 1].lang2.end
+  const lang2SentencesRemaining = allLang2Sentences.slice(lastLang2Index)
+  const extraLang2Cluster = lang2SentencesRemaining.length
     ? {
         lang1: [] as Sentence[],
-        lang2: zhSentsRemaining,
+        lang2: lang2SentencesRemaining,
         score: 0,
       }
     : null
 
-  extraZhCluster && chunks.push(extraZhCluster)
-  extraEnCluster && chunks.push(extraEnCluster)
+  extraLang2Cluster && chunks.push(extraLang2Cluster)
+  extraLang1Cluster && chunks.push(extraLang1Cluster)
 
   return chunks
 }

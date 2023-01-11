@@ -53,10 +53,7 @@ export const paginatedMapper = async <CollectionName extends keyof AllModels>(
   let writer = firestore.batch()
   let writeCount = 0
 
-  const firstDocQuerySnap = await collection
-    .limit(1)
-    .orderBy(FieldPath.documentId())
-    .get()
+  const firstDocQuerySnap = await collection.limit(1).get()
   const firstDoc = firstDocQuerySnap.docs[0]
   if (probe) {
     console.log(`Probe results (${collectionName}):`, firstDoc?.data())
@@ -70,14 +67,10 @@ export const paginatedMapper = async <CollectionName extends keyof AllModels>(
 
   const writePromises = []
   while (true) {
-    const querySnaps = await collection
-      .limit(400)
-      .orderBy(FieldPath.documentId())
-      .startAfter(cursor)
-      .get()
+    const querySnaps = await collection.limit(400).startAfter(cursor).get()
 
     const docs =
-      writeCount === 0 ? [firstDoc].concat(querySnaps.docs) : querySnaps.docs
+      cursor === firstDoc ? [firstDoc].concat(querySnaps.docs) : querySnaps.docs
 
     const updateExists = (updateObjOrDelete: Record<string, any> | string) => {
       return typeof updateObjOrDelete === "object"
@@ -115,10 +108,12 @@ export const paginatedMapper = async <CollectionName extends keyof AllModels>(
             const writeCompletePromise = !dry
               ? oldWriter.commit()
               : Promise.resolve()
-            writePromises.push(writeCompletePromise)
+            return writeCompletePromise
           }
         }
+        return Promise.resolve() as Promise<any>
       })
+      writePromises.push(updatePromise)
     }
 
     if (querySnaps.docs.length < 400) {
