@@ -58,7 +58,7 @@ const MAX_SENTENCE_LENGTH = 500
 const backUpSplitSentences = (sentences: string[]) => {
   const backupSplitted = sentences.map((sentence) => {
     if (sentence.length > MAX_SENTENCE_LENGTH) {
-      const splitted = sentence.split(/.。/g)
+      const splitted = sentence.split(/.。」/g)
       const finalSplit = splitted
         .map((sentence) => {
           if (sentence.length > MAX_SENTENCE_LENGTH) {
