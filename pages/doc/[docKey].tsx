@@ -17,12 +17,6 @@ import React from "react"
 import { map } from "rxjs"
 import ErrorPage from "next/error"
 
-// const [matchLength, setMatchLength] = React.useState("1")
-const matchLength = "1"
-const changeMatchLength = (event) => {
-  // setMatchLength(event.target.value)
-}
-
 const dataFunc = memoizeDataFunc((renderId: string) => {
   const param = stringParam("docKey", undefined as ForeignKey<"documentJob">)
 
@@ -58,7 +52,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
         return _?.settings || {}
       })
     ),
-    parseInt(matchLength)
+    parseInt("2")
   )
 
   return {
@@ -86,6 +80,11 @@ export const compareSelections = (
 }
 
 const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
+  const [matchLength, setMatchLength] = React.useState("1")
+  const changeMatchLength = (event) => {
+    setMatchLength(event.target.value)
+  }
+
   if (!chunks) {
     return <ErrorPage statusCode={404}></ErrorPage>
   }
