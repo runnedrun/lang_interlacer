@@ -51,15 +51,21 @@ export const DocPreviewHeader = component(
   () => {
     const docJob = docForKey("documentJob", prop("docKey"))
     const languages = prop("languages", undefined as Language[])
+    const matchLength = prop("matchLength", undefined as string)
+    const changeMatchLength = prop("changeMatchLength", undefined as any)
     return {
       docJob,
       languages,
+      matchLength,
+      changeMatchLength,
       selectedTab: settable("selectedTab", "1"),
     }
   },
   ({
     docJob: { settings = {}, uid, epubFile },
     languages,
+    matchLength,
+    changeMatchLength,
     selectedTab,
     setSelectedTab,
   }) => {
@@ -72,11 +78,6 @@ export const DocPreviewHeader = component(
       pronunciationSwitchText += " (pinyin)"
     } else if (languages.includes(Language.Japanese)) {
       pronunciationSwitchText += " (furigana)"
-    }
-
-    const [matchLength, setMatchLength] = React.useState("1")
-    const changeMatchLength = (event: SelectChangeEvent) => {
-      setMatchLength(event.target.value)
     }
 
     return (

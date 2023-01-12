@@ -16,7 +16,7 @@ export const matchSentences = (
   lang1Sentences: Sentence[],
   lang2Sentences: Sentence[],
   lookForwardSize: number = 2,
-  matchLength: number = 2
+  matchLength: number = 1
 ): Node[] => {
   const scoreNode = (
     node: Node,

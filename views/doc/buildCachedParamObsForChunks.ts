@@ -30,7 +30,8 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
     RawParagraph[],
     NameType
   >,
-  settingsObs: ParamaterizedObservable<any, DocumentJobSettings, any>
+  settingsObs: ParamaterizedObservable<any, DocumentJobSettings, any>,
+  matchLength: number = 1
 ): ParamaterizedObservable<ArgType, Chunk[], any> => {
   const combined = combine(
     {
@@ -57,7 +58,13 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
     () => new Worker(new URL("./buildChunks.worker.ts", import.meta.url)),
     {},
     (values) => {
-      return of(processChunks(values.lang1Paragraphs, values.lang2Paragraphs))
+      return of(
+        processChunks(
+          values.lang1Paragraphs,
+          values.lang2Paragraphs,
+          matchLength
+        )
+      )
     }
   )
 

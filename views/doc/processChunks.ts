@@ -9,7 +9,8 @@ import { Chunk } from "./ChunkDisplay"
 
 export const processChunks = (
   lang1Paragraphs: RawParagraph[],
-  lang2Paragraphs: RawParagraph[]
+  lang2Paragraphs: RawParagraph[],
+  matchLength: number = 1
 ) => {
   if (!lang1Paragraphs.length || !lang2Paragraphs.length) {
     return null
@@ -17,7 +18,8 @@ export const processChunks = (
 
   const initialChunks = buildChunksFromEmbeddings(
     lang1Paragraphs,
-    lang2Paragraphs
+    lang2Paragraphs,
+    matchLength
   )
 
   return initialChunks

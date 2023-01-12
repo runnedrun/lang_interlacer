@@ -17,6 +17,12 @@ import React from "react"
 import { map } from "rxjs"
 import ErrorPage from "next/error"
 
+// const [matchLength, setMatchLength] = React.useState("1")
+const matchLength = "1"
+const changeMatchLength = (event) => {
+  // setMatchLength(event.target.value)
+}
+
 const dataFunc = memoizeDataFunc((renderId: string) => {
   const param = stringParam("docKey", undefined as ForeignKey<"documentJob">)
 
@@ -51,7 +57,8 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
       map((_) => {
         return _?.settings || {}
       })
-    )
+    ),
+    parseInt(matchLength)
   )
 
   return {
@@ -96,7 +103,12 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
         </div>
       )}
       <div className="flex h-screen max-w-2xl flex-col px-5 md:w-2/3 md:p-0">
-        <DocPreviewHeader docKey={docKey} languages={languages} />
+        <DocPreviewHeader
+          docKey={docKey}
+          languages={languages}
+          matchLength={matchLength}
+          changeMatchLength={changeMatchLength}
+        />
         <div className="overflow-auto">
           <ChunksDisplay chunks={chunks} />
         </div>
