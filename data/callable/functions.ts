@@ -1,3 +1,4 @@
+import { ProcessTestsCallableInput } from "@/functions/src/callable/processTestsCallable"
 import {
   addPronunciationToChunks,
   AddPronunciationToChunksInput,
@@ -37,6 +38,11 @@ export const addPronunciationToChunksCallable = buildCallableFunction<
   AddPronunciationToChunksInput,
   AddPronunciationToChunksOutput
 >("addPronunciationToChunksCallable", addPronunciationToChunks)
+
+export const processTestsCallable = buildCallableFunction<
+  ProcessTestsCallableInput,
+  void
+>("processTestsCallable", () => Promise.resolve(null))
 
 // export const sendMetricsReportTestEmail = buildCallableFunction<SendMetricsReportTestEmailArgs>(
 //   "sendMetricsReportTestEmail"

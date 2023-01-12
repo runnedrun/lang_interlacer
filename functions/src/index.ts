@@ -5,6 +5,7 @@ import { translateTextTask } from "./tasks/translateTextTask"
 import { prepareEmbeddingsTask } from "./tasks/prepareEmbeddingsTask"
 import { addPronunciationToChunksCallable } from "./callable/addPronunciationToChunksCallable"
 import { triggerEpubCreationForDocJob } from "./triggers/triggerEpubCreationForDocJob"
+import { processTestsCallable } from "./callable/processTestsCallable"
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -21,5 +22,6 @@ export {
   triggerEmbeddingPreparationOnJobCreate,
   translateTextTask,
   addPronunciationToChunksCallable,
+  processTestsCallable,
   triggerEpubCreationForDocJob,
 }
