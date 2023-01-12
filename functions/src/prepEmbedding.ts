@@ -86,6 +86,7 @@ export const getSents = async (text: string) => {
 
   const textIsLatin = isLatin(clean)
 
+  // Ask David about this and why it's behaving differently for testData and user input
   const results = await (textIsLatin
     ? Promise.resolve(nlp.readDoc(clean).sentences().out())
     : getSentsFromServer(clean).then((_) => _[0].sentences))
