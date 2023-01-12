@@ -7,7 +7,16 @@ import { Timestamp } from "@firebase/firestore"
 import TabContext from "@mui/lab/TabContext"
 import TabList from "@mui/lab/TabList"
 import TabPanel from "@mui/lab/TabPanel"
-import { Button, FormControlLabel, Switch } from "@mui/material"
+import {
+  Button,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Switch,
+} from "@mui/material"
 import Box from "@mui/material/Box"
 import Tab from "@mui/material/Tab"
 import * as React from "react"
@@ -92,6 +101,36 @@ export const DocPreviewHeader = component(
                     />
                   }
                   label={pronunciationSwitchText}
+                />
+                <FormControlLabel
+                  control={
+                    <FormControl>
+                      <InputLabel id="match-length-label">#</InputLabel>
+                      <Select
+                        labelId="match-length-label"
+                        id="match-length-select"
+                        value={settings.matchLength}
+                        label="#"
+                        onChange={(event) => {
+                          const val = event.target.value
+                          setters.documentJob(uid, {
+                            settings: {
+                              ...settings,
+                              matchLength:
+                                typeof val === "number" ? val : parseInt(val),
+                            },
+                          })
+                        }}
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                        <MenuItem value={4}>4</MenuItem>
+                        <MenuItem value={5}>5</MenuItem>
+                      </Select>
+                    </FormControl>
+                  }
+                  label="Sentences to match"
                 />
               </div>
             </TabPanel>

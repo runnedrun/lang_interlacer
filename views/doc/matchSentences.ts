@@ -15,6 +15,7 @@ const getSentencesInNode = (node: Node) => {
 export const matchSentences = (
   lang1Sentences: Sentence[],
   lang2Sentences: Sentence[],
+  matchLength: number,
   lookForwardSize: number = 2
 ): Node[] => {
   const scoreNode = (
@@ -44,8 +45,11 @@ export const matchSentences = (
       }
     }
 
+    // default is 1 sentence, so reduce matchLength accordingly
+    const n = matchLength - 1
     const totalMatches =
-      (node.lang1.end - node.lang1.start) * (node.lang2.end - node.lang2.start)
+      (node.lang1.end + n - node.lang1.start) *
+      (node.lang2.end + n - node.lang2.start)
 
     const averageScore = additiveScore / Math.pow(totalMatches, 1)
 

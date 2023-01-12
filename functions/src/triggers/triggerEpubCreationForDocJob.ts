@@ -43,6 +43,7 @@ export const triggerEpubCreationForDocJob = functions
 
     const finalizedChunks = await finalizeDoc(docId, {
       includePronunciation: after.settings?.showPronunciation,
+      matchLength: after.settings?.matchLength,
     })
     console.log("final  chunks", finalizedChunks.length)
 

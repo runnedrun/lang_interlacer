@@ -57,7 +57,14 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
     () => new Worker(new URL("./buildChunks.worker.ts", import.meta.url)),
     {},
     (values) => {
-      return of(processChunks(values.lang1Paragraphs, values.lang2Paragraphs))
+      return of(
+        processChunks(
+          values.lang1Paragraphs,
+          values.lang2Paragraphs
+          // Question for David: how can I get the matchLength from settingsObs?
+          // settingsObs.matchLength
+        )
+      )
     }
   )
 

@@ -6,11 +6,12 @@ import { paginatedMapper } from "./paginatedMapper"
 
 type FinalizeDocOptions = {
   includePronunciation?: boolean
+  matchLength?: number
 }
 
 export const finalizeDoc = async (
   docKey: string,
-  { includePronunciation }: FinalizeDocOptions
+  { includePronunciation, matchLength }: FinalizeDocOptions
 ) => {
   const lang1Paragraphs = [] as RawParagraph[]
   const lang2Paragraphs = [] as RawParagraph[]
@@ -32,7 +33,11 @@ export const finalizeDoc = async (
     }
   )
 
-  const chunks = buildChunksFromEmbeddings(lang1Paragraphs, lang2Paragraphs)
+  const chunks = buildChunksFromEmbeddings(
+    lang1Paragraphs,
+    lang2Paragraphs,
+    matchLength
+  )
   const cleanChunks = chunks.map((chunk) => {
     const cleanLang1 = chunk.lang1.map((sentence) => {
       delete sentence.embedding

@@ -79,6 +79,11 @@ export const compareSelections = (
 }
 
 const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
+  const [matchLength, setMatchLength] = React.useState("1")
+  const changeMatchLength = (event) => {
+    setMatchLength(event.target.value)
+  }
+
   if (!chunks) {
     return <ErrorPage statusCode={404}></ErrorPage>
   }

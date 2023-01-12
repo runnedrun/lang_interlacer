@@ -58,7 +58,7 @@ const MAX_SENTENCE_LENGTH = 500
 const backUpSplitSentences = (sentences: string[]) => {
   const backupSplitted = sentences.map((sentence) => {
     if (sentence.length > MAX_SENTENCE_LENGTH) {
-      const splitted = sentence.split(/.。/g)
+      const splitted = sentence.split(/.。」/g)
       const finalSplit = splitted
         .map((sentence) => {
           if (sentence.length > MAX_SENTENCE_LENGTH) {
@@ -86,6 +86,7 @@ export const getSents = async (text: string) => {
 
   const textIsLatin = isLatin(clean)
 
+  // Question for David: Why is it behaving differently for testData and user input
   const results = await (textIsLatin
     ? Promise.resolve(nlp.readDoc(clean).sentences().out())
     : getSentsFromServer(clean).then((_) => _[0].sentences))

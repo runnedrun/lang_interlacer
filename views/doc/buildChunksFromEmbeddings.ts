@@ -5,7 +5,8 @@ import { matchSentences } from "./matchSentences"
 
 export const buildChunksFromEmbeddings = (
   lang1Paragraphs: RawParagraph[],
-  lang2Paragraphs: RawParagraph[]
+  lang2Paragraphs: RawParagraph[],
+  matchLength: number
 ): Chunk[] => {
   const allLang1Sentences = sortBy(
     lang1Paragraphs.flatMap((p) => p.sentences),
@@ -16,7 +17,12 @@ export const buildChunksFromEmbeddings = (
     "sentenceIndex"
   )
 
-  const path = matchSentences(allLang1Sentences, allLang2Sentences, 3)
+  const path = matchSentences(
+    allLang1Sentences,
+    allLang2Sentences,
+    matchLength,
+    3
+  )
 
   const chunks = path.map((node) => {
     const lang1ForCluster = allLang1Sentences.slice(
