@@ -15,8 +15,8 @@ const getSentencesInNode = (node: Node) => {
 export const matchSentences = (
   lang1Sentences: Sentence[],
   lang2Sentences: Sentence[],
-  lookForwardSize: number = 2,
-  matchLength: number = 1
+  matchLength: number,
+  lookForwardSize: number = 2
 ): Node[] => {
   const scoreNode = (
     node: Node,

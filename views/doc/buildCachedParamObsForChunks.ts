@@ -30,8 +30,7 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
     RawParagraph[],
     NameType
   >,
-  settingsObs: ParamaterizedObservable<any, DocumentJobSettings, any>,
-  matchLength: number = 1
+  settingsObs: ParamaterizedObservable<any, DocumentJobSettings, any>
 ): ParamaterizedObservable<ArgType, Chunk[], any> => {
   const combined = combine(
     {
@@ -61,8 +60,9 @@ export const buildCachedParamObsForChunks = <ArgType, NameType extends string>(
       return of(
         processChunks(
           values.lang1Paragraphs,
-          values.lang2Paragraphs,
-          matchLength
+          values.lang2Paragraphs
+          // Question for David: how can I get the matchLength from settingsObs?
+          // settingsObs.matchLength
         )
       )
     }

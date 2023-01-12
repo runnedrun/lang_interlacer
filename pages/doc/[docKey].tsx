@@ -51,8 +51,7 @@ const dataFunc = memoizeDataFunc((renderId: string) => {
       map((_) => {
         return _?.settings || {}
       })
-    ),
-    parseInt("2")
+    )
   )
 
   return {
@@ -102,12 +101,7 @@ const DocDisplay = component(dataFunc, ({ chunks, docKey, isLoading }) => {
         </div>
       )}
       <div className="flex h-screen max-w-2xl flex-col px-5 md:w-2/3 md:p-0">
-        <DocPreviewHeader
-          docKey={docKey}
-          languages={languages}
-          matchLength={matchLength}
-          changeMatchLength={changeMatchLength}
-        />
+        <DocPreviewHeader docKey={docKey} languages={languages} />
         <div className="overflow-auto">
           <ChunksDisplay chunks={chunks} />
         </div>

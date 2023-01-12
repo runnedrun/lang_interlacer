@@ -4,6 +4,7 @@ import { Language } from "./RawParagraph"
 
 export type DocumentJobSettings = {
   showPronunciation?: boolean
+  matchLength?: number
   splitWords?: boolean
   showScores?: boolean
   showHiragana?: boolean

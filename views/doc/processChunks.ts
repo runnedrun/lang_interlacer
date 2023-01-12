@@ -10,7 +10,8 @@ import { Chunk } from "./ChunkDisplay"
 export const processChunks = (
   lang1Paragraphs: RawParagraph[],
   lang2Paragraphs: RawParagraph[],
-  matchLength: number = 1
+  // Question for David: this is where I change the matchLength
+  matchLength: number = 2
 ) => {
   if (!lang1Paragraphs.length || !lang2Paragraphs.length) {
     return null
